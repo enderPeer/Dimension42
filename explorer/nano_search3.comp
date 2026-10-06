@@ -1,0 +1,91 @@
+#version 450
+// "Which programs add THREE numbers?"  Vulkan version of pass 1 in nano_search3.cu (same rules).
+#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+
+layout(local_size_x = 256) in;
+layout(std430, binding = 0) buffer Cand { uint64_t cand[]; };
+// cnt: 0 ncand (whole range) | 1 says6 2 add 3 const6 4 other 5 overflow (per submission)
+layout(std430, binding = 1) buffer Cnt { uint cnt[]; };
+layout(push_constant) uniform Push { uint L; uint start_lo; uint start_hi; uint count; uint cap; uint ca; uint cb; uint cc; } pc;
+
+const uint TA[32] = uint[](0u,1u,0u,0u,1u,3u,2u,5u,255u,0u,1u,128u,100u,7u,9u,200u,13u,255u,64u,16u,6u,0u,77u,45u,2u,0u,0u,11u,30u,2u,90u,1u);
+const uint TB[32] = uint[](0u,0u,1u,0u,2u,2u,3u,0u,1u,255u,0u,64u,55u,250u,9u,0u,31u,255u,32u,32u,1u,6u,123u,77u,0u,2u,0u,2u,11u,30u,90u,1u);
+const uint TC[32] = uint[](0u,0u,0u,1u,3u,1u,1u,7u,0u,1u,255u,64u,1u,3u,9u,100u,77u,255u,16u,64u,0u,1u,45u,123u,0u,0u,2u,30u,2u,11u,90u,1u);
+
+shared uint s[6];
+
+uint getb(uint m0, uint m1, uint m2, uint m3, uint n) {
+    uint w = n < 4u ? m0 : n < 8u ? m1 : n < 12u ? m2 : m3;
+    return (w >> ((n & 3u) * 8u)) & 255u;
+}
+
+int run3(uint64_t p, uint L, uint a, uint b, uint c) {
+    uint m[4] = uint[](0u, 0u, 0u, 0u);
+    for (uint i = 0u; i < L; i++) {
+        uint v = uint(p >> (8u * (L - 1u - i))) & 255u;
+        m[i >> 2] = (m[i >> 2] & ~(255u << ((i & 3u) * 8u))) | (v << ((i & 3u) * 8u));
+    }
+    m[pc.ca >> 2] = (m[pc.ca >> 2] & ~(255u << ((pc.ca & 3u) * 8u))) | (a << ((pc.ca & 3u) * 8u));
+    m[pc.cb >> 2] = (m[pc.cb >> 2] & ~(255u << ((pc.cb & 3u) * 8u))) | (b << ((pc.cb & 3u) * 8u));
+    m[pc.cc >> 2] = (m[pc.cc >> 2] & ~(255u << ((pc.cc & 3u) * 8u))) | (c << ((pc.cc & 3u) * 8u));
+    uint m0 = m[0], m1 = m[1], m2 = m[2], m3 = m[3];
+    uint A = 0u, pcr = 0u;
+    for (uint steps = 0u; steps < 64u; steps++) {
+        uint ins = ((pcr < 4u ? m0 : m1) >> ((pcr & 3u) * 8u)) & 255u;
+        pcr = pcr + 1u >= L ? 0u : pcr + 1u;
+        uint op = ins >> 4, n = ins & 15u;
+        if (op == 15u) return -1;
+        uint val = getb(m0, m1, m2, m3, n);
+        if (op == 13u) return int(val);
+        uint k = n & 7u;
+        uint rol = ((A << k) | (A >> (8u - k))) & 255u;
+        uint nA = A;
+        nA = op == 1u ? n : nA;
+        nA = op == 2u ? A + n : nA;
+        nA = op == 3u ? A - n : nA;
+        nA = op == 4u ? val : nA;
+        nA = op == 6u ? A + val : nA;
+        nA = op == 11u ? rol : nA;
+        nA = op == 12u ? (A ^ val) : nA;
+        uint wr = op == 5u ? A : op == 9u ? val + 1u : op == 10u ? val - 1u : ~val;
+        bool dow = op == 5u || op == 9u || op == 10u || op == 14u;
+        uint sh = (n & 3u) * 8u, keep = ~(255u << sh), pv = (wr & 255u) << sh, wi = n >> 2;
+        m0 = dow && wi == 0u ? (m0 & keep) | pv : m0;
+        m1 = dow && wi == 1u ? (m1 & keep) | pv : m1;
+        m2 = dow && wi == 2u ? (m2 & keep) | pv : m2;
+        m3 = dow && wi == 3u ? (m3 & keep) | pv : m3;
+        pcr = (op == 7u || (op == 8u && A == 0u)) ? n % L : pcr;
+        A = nA & 255u;
+    }
+    return -1;
+}
+
+void main() {
+    uint lid = gl_LocalInvocationIndex;
+    if (lid < 6u) s[lid] = 0u;
+    barrier();
+    uint64_t start = (uint64_t(pc.start_hi) << 32) | uint64_t(pc.start_lo);
+    uint c_says = 0u, c_add = 0u, c_const = 0u, c_other = 0u, c_over = 0u;
+    for (uint j = 0u; j < 4u; j++) {
+        uint idx = gl_GlobalInvocationID.x * 4u + j;
+        if (idx >= pc.count) break;
+        uint64_t p = start + uint64_t(idx);
+        if (run3(p, pc.L, 2u, 2u, 2u) != 6) continue;
+        c_says++;
+        bool fadd = true, fconst = true;
+        for (uint t = 0u; t < 32u && (fadd || fconst); t++) {
+            int o = run3(p, pc.L, TA[t], TB[t], TC[t]);
+            fadd = fadd && o == int((TA[t] + TB[t] + TC[t]) & 255u);
+            fconst = fconst && o == 6;
+        }
+        if (fadd) {
+            c_add++;
+            uint at = atomicAdd(cnt[0], 1u);
+            if (at < pc.cap) cand[at] = p; else c_over++;
+        } else if (fconst) c_const++;
+        else c_other++;
+    }
+    atomicAdd(s[1], c_says); atomicAdd(s[2], c_add); atomicAdd(s[3], c_const); atomicAdd(s[4], c_other); atomicAdd(s[5], c_over);
+    barrier();
+    if (lid == 0u) for (uint q = 1u; q < 6u; q++) if (s[q] != 0u) atomicAdd(cnt[q], s[q]);
+}

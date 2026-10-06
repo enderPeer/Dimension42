@@ -1,0 +1,113 @@
+#version 450
+// NANO explorer, Vulkan compute shader. Same semantics, classes and hash as nano_cpu.c.
+// Each invocation runs 4 consecutive programs and writes their 4 class bytes as one uint.
+#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+
+layout(local_size_x = 256) in;
+layout(std430, binding = 0) writeonly buffer Cls  { uint cls[]; };
+layout(std430, binding = 1) writeonly buffer Part { uint64_t part[]; };  // hash sum per workgroup
+layout(std430, binding = 2) writeonly buffer Cnt  { uint cnt[]; };       // 8 counters per workgroup
+layout(push_constant) uniform Push {
+    uint L; uint start_lo; uint start_hi; uint count; uint write_cls; uint inv_base; uint wg_base;
+} pc;
+
+shared uint64_t s_sum[256];
+shared uint s_cnt[8];
+
+uint getb(uint m0, uint m1, uint m2, uint m3, uint n) {
+    uint w = n < 4u ? m0 : n < 8u ? m1 : n < 12u ? m2 : m3;
+    return (w >> ((n & 3u) * 8u)) & 255u;
+}
+uint fnv(uint h, uint b) { return (h ^ (b & 255u)) * 16777619u; }
+uint fnvw(uint h, uint w) { h = fnv(h, w); h = fnv(h, w >> 8); h = fnv(h, w >> 16); return fnv(h, w >> 24); }
+
+void run(uint64_t p, uint L, out uint cls, out uint h) {
+    uint prog0 = 0u, prog1 = 0u;                         // program bytes 0..3 and 4..7
+    for (uint b = 0u; b < L; b++) {
+        uint v = uint(p >> (8u * (L - 1u - b))) & 255u;
+        if (b < 4u) prog0 |= v << (8u * b); else prog1 |= v << (8u * (b - 4u));
+    }
+    uint m0 = prog0, m1 = prog1, m2 = 0u, m3 = 0u;
+    uint t0 = 0u, t1 = 0u, t2 = 0u, t3 = 0u, o0 = 0u, o1 = 0u;
+    uint A = 0u, tA = 0u, pcr = 0u, steps = 0u, outc = 0u, halted = 0u;
+    for (;;) {
+        t0 |= m0; t1 |= m1; t2 |= m2; t3 |= m3; tA |= A;
+        if (steps >= 64u) break;
+        steps++;
+        uint ins = ((pcr < 4u ? m0 : m1) >> ((pcr & 3u) * 8u)) & 255u;
+        pcr = pcr + 1u >= L ? 0u : pcr + 1u;
+        uint op = ins >> 4, n = ins & 15u;
+        if (op == 15u) { halted = 1u; break; }
+        uint val = getb(m0, m1, m2, m3, n);
+        uint k = n & 7u;
+        uint rol = ((A << k) | (A >> (8u - k))) & 255u;
+        uint nA = A;
+        nA = op == 1u ? n : nA;
+        nA = op == 2u ? A + n : nA;
+        nA = op == 3u ? A - n : nA;
+        nA = op == 4u ? val : nA;
+        nA = op == 6u ? A + val : nA;
+        nA = op == 11u ? rol : nA;
+        nA = op == 12u ? (A ^ val) : nA;
+        uint wr = op == 5u ? A : op == 9u ? val + 1u : op == 10u ? val - 1u : ~val;
+        bool dow = op == 5u || op == 9u || op == 10u || op == 14u;
+        uint sh = (n & 3u) * 8u, keep = ~(255u << sh), put = (wr & 255u) << sh, wi = n >> 2;
+        m0 = dow && wi == 0u ? (m0 & keep) | put : m0;
+        m1 = dow && wi == 1u ? (m1 & keep) | put : m1;
+        m2 = dow && wi == 2u ? (m2 & keep) | put : m2;
+        m3 = dow && wi == 3u ? (m3 & keep) | put : m3;
+        pcr = (op == 7u || (op == 8u && A == 0u)) ? n % L : pcr;
+        bool doo = op == 13u && outc < 8u;
+        uint osh = (outc & 3u) * 8u, oput = val << osh, okeep = ~(255u << osh);
+        o0 = doo && outc < 4u ? (o0 & okeep) | oput : o0;
+        o1 = doo && outc >= 4u ? (o1 & okeep) | oput : o1;
+        outc += op == 13u ? 1u : 0u;
+        A = nA & 255u;
+    }
+    uint pm0 = L >= 4u ? 0xFFFFFFFFu : ((1u << (8u * L)) - 1u);
+    uint pm1 = L <= 4u ? 0u : L >= 8u ? 0xFFFFFFFFu : ((1u << (8u * (L - 4u))) - 1u);
+    bool selfmod = (m0 & pm0) != prog0 || (m1 & pm1) != prog1;
+    bool isactive = tA != 0u || (t0 & ~pm0) != 0u || (t1 & ~pm1) != 0u;
+    cls = (t2 | t3) != 0u ? 6u : outc != 0u ? 5u : selfmod ? 4u : isactive ? 3u : halted != 0u ? 2u : 1u;
+    h = 2166136261u;
+    h = fnv(h, A); h = fnv(h, steps); h = fnv(h, outc); h = fnv(h, halted); h = fnv(h, tA);
+    h = fnvw(h, m0); h = fnvw(h, m1); h = fnvw(h, m2); h = fnvw(h, m3);
+    h = fnvw(h, t0); h = fnvw(h, t1); h = fnvw(h, t2); h = fnvw(h, t3);
+    h = fnvw(h, o0); h = fnvw(h, o1);
+}
+
+void main() {
+    uint lid = gl_LocalInvocationIndex;
+    if (lid < 8u) s_cnt[lid] = 0u;
+    barrier();
+    uint inv = gl_GlobalInvocationID.x;
+    uint64_t start = (uint64_t(pc.start_hi) << 32) | uint64_t(pc.start_lo);
+    uint64_t mysum = 0ul;
+    uint packed = 0u;
+    uint c1 = 0u, c2 = 0u, c3 = 0u, c4 = 0u, c5 = 0u, c6 = 0u;
+    for (uint j = 0u; j < 4u; j++) {
+        uint idx = inv * 4u + j;
+        if (idx < pc.count) {
+            uint c, h;
+            run(start + uint64_t(idx), pc.L, c, h);
+            mysum += uint64_t(h);
+            packed |= c << (8u * j);
+            c1 += c == 1u ? 1u : 0u; c2 += c == 2u ? 1u : 0u; c3 += c == 3u ? 1u : 0u;
+            c4 += c == 4u ? 1u : 0u; c5 += c == 5u ? 1u : 0u; c6 += c == 6u ? 1u : 0u;
+        }
+    }
+    if (pc.write_cls != 0u && inv * 4u < pc.count) cls[pc.inv_base + inv] = packed;
+    atomicAdd(s_cnt[1], c1); atomicAdd(s_cnt[2], c2); atomicAdd(s_cnt[3], c3);
+    atomicAdd(s_cnt[4], c4); atomicAdd(s_cnt[5], c5); atomicAdd(s_cnt[6], c6);
+    s_sum[lid] = mysum;
+    barrier();
+    for (uint s = 128u; s > 0u; s >>= 1) {
+        if (lid < s) s_sum[lid] += s_sum[lid + s];
+        barrier();
+    }
+    if (lid == 0u) {
+        uint wg = pc.wg_base + gl_WorkGroupID.x;
+        part[wg] = s_sum[0];
+        for (uint q = 0u; q < 8u; q++) cnt[wg * 8u + q] = s_cnt[q];
+    }
+}

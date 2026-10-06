@@ -1,0 +1,93 @@
+{
+ "cells": [
+  8,
+  9
+ ],
+ "definition": {
+  "input": "a in M8, b in M9",
+  "answer": "first value output with OUT",
+  "search": "all programs of 1..5 bytes run with a=2, b=2; answer 4 -> tested on 32 more pairs",
+  "proof": "ADD candidates run on all 65,536 pairs a,b in 0..255, must answer (a+b) mod 256"
+ },
+ "seconds": {
+  "search": 45.534568700008094,
+  "verify": 1.1734755000798032
+ },
+ "per_length": {
+  "1": {
+   "programs": 256,
+   "says4": 0,
+   "add": 0,
+   "const": 0,
+   "mul": 0,
+   "twoa": 0,
+   "twob": 0,
+   "other": 0,
+   "overflow": 0,
+   "add_proven": 0,
+   "add_failed_full_test": 0,
+   "add_clean": 0,
+   "failed_examples": []
+  },
+  "2": {
+   "programs": 65536,
+   "says4": 2,
+   "add": 0,
+   "const": 2,
+   "mul": 0,
+   "twoa": 0,
+   "twob": 0,
+   "other": 0,
+   "overflow": 0,
+   "add_proven": 0,
+   "add_failed_full_test": 0,
+   "add_clean": 0,
+   "failed_examples": []
+  },
+  "3": {
+   "programs": 16777216,
+   "says4": 1488,
+   "add": 0,
+   "const": 1480,
+   "mul": 0,
+   "twoa": 0,
+   "twob": 0,
+   "other": 8,
+   "overflow": 0,
+   "add_proven": 0,
+   "add_failed_full_test": 0,
+   "add_clean": 0,
+   "failed_examples": []
+  },
+  "4": {
+   "programs": 4294967296,
+   "says4": 709146,
+   "add": 106,
+   "const": 700424,
+   "mul": 0,
+   "twoa": 83,
+   "twob": 80,
+   "other": 8453,
+   "overflow": 0,
+   "add_proven": 106,
+   "add_failed_full_test": 0,
+   "add_clean": 0,
+   "failed_examples": []
+  },
+  "5": {
+   "programs": 1099511627776,
+   "says4": 280788459,
+   "add": 79341,
+   "const": 275213233,
+   "mul": 0,
+   "twoa": 52877,
+   "twob": 52793,
+   "other": 5390215,
+   "overflow": 0,
+   "add_proven": 79341,
+   "add_failed_full_test": 0,
+   "add_clean": 1407,
+   "failed_examples": []
+  }
+ }
+}

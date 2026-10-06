@@ -1,0 +1,1255 @@
+; =====================================================================
+;  DIMENSION42 OS  -  KERNEL v0.3   (loaded at 0000:8000, 16-bit real mode)
+; =====================================================================
+;  Pure x86 machine code, hand-encoded. Offsets are relative to 0x8000.
+;
+;  v0.1  cluster heartbeat: 4 PCs find each other over ethernet
+;  v0.2  PROGRAM EXPLORER: every 1-byte program for the NANO CPU is run,
+;        classified and shown in a viewer. The 256 programs are split
+;        across the cluster (64 per node) and results are shared over
+;        the network, so every node shows the complete map.
+;
+;  NANO CPU (simulated inside the kernel)
+;    16 bytes memory M0..MF, program loaded at M0, register A, PC.
+;    Instruction byte = op (high nibble) + n (low nibble).
+;      0 NOP          4 LD  A=M[n]     8 JZ  if A=0 PC=n   C XOR A^=M[n]
+;      1 LDI A=n      5 ST  M[n]=A     9 INC M[n]++        D OUT output M[n]
+;      2 ADDI A+=n    6 ADD A+=M[n]    A DEC M[n]--        E NOT M[n]=~M[n]
+;      3 SUBI A-=n    7 JMP PC=n       B ROL A rotl n      F HLT
+;    PC wraps at program length (1), so a 1-byte program repeats forever.
+;    Runs 64 steps. M8..MF = 8x8 pixel display (one byte per row).
+;    Programs can modify themselves (M0 is the program).
+;
+;  CLASSES (highest that applies)
+;    6 DRAW      display was lit at some step
+;    5 OUTPUT    produced output
+;    4 SELF-MOD  program byte changed
+;    3 ACTIVE    A or M1..M7 non-zero at some step
+;    2 HALT      stopped by HLT
+;    1 IDLE      nothing happened
+;    0 PENDING   result not yet received from its node
+;
+;  RESULT RECORD (32 bytes, table at 0xC000 + prog*32)
+;    +0 class  +1 final A  +2 steps  +3 output count  +4 final M0
+;    +5 node that computed it   +8..15 first 8 outputs
+;    +16..23 final M0..M7      +24..31 display, OR of all 64 steps
+;
+;  KERNEL LAYOUT                   MEMORY MAP
+;    0000 init                       0600 NANO CPU state
+;    0200 main loop                  7C00 boot sector
+;    0240 tx (EAX=buf, CX=len)       8000 kernel
+;    0280 send heartbeat+results     C000 result table (8 KiB)
+;    0300 net_poll                   E000 results frame buffer
+;    03C0 key_handle                 10000 NIC receive ring
+;    0400 draw_status                B8000 text screen (GS)
+;    0480 draw_grid
+;    0500 draw_detail                NANO STATE (0x06xx)
+;    06C0 print SI DI AH               00-0F M  10 A  11 PC  12 steps
+;    06D0 hexchar AL                   13 outcnt  14 halted  18-1F outputs
+;    06E0 hexbyte AL AH DI             40-4F trace(OR of M)  50 trace(A)
+;    0700 hexrow SI CX AH DI           60 prog  61 proglen  70 cur  72 end
+;    0710 explore
+;    0760 nano_run + instructions
+;    0900 nano_done: classify, store record
+;    0A00 data
+;
+;  CLUSTER PROTOCOL v2 (ethertype 0x88B5)  payload: "D42" id type ...
+;    type 00 heartbeat (every second)
+;    type 'R' results: +1 first program, then 32 records (1024 bytes)
+; =====================================================================
+
+; ===================== INIT ==========================================
+=0000
+FC                  ; cld
+FB                  ; sti
+31 C0               ; xor  ax, ax
+8E D8               ; mov  ds, ax
+8E C0               ; mov  es, ax
+B8 00 B8            ; mov  ax, 0xB800
+8E E8               ; mov  gs, ax              GS -> text screen
+B4 01               ; mov  ah, 0x01
+B9 00 20            ; mov  cx, 0x2000
+CD 10               ; int  0x10                hide cursor
+31 FF               ; xor  di, di
+B8 20 1F            ; mov  ax, 0x1F20
+=0019
+65 89 05            ; mov  [gs:di], ax         blue title bar
+83 C7 02            ; add  di, 2
+81 FF A0 00         ; cmp  di, 160
+72 F4               ; jb   0x0019
+BE D0 8B            ; mov  si, s_title
+31 FF               ; xor  di, di
+E8 93 06            ; call print
+=002D
+BE 10 8C            ; mov  si, "THIS PC: "
+BF A4 00            ; mov  di, row1 col2
+B4 0F               ; mov  ah, 0x0F
+E8 88 06            ; call print
+BE 20 8C            ; mov  si, "CLUSTER: "
+BF CC 00            ; mov  di, row1 col22
+E8 7F 06            ; call print
+=0041
+BE 40 8C            ; mov  si, "EXPLORER: ..."
+BF E4 01            ; mov  di, row3 col2
+B4 0E               ; mov  ah, 0x0E            yellow
+E8 74 06            ; call print
+BE 70 8C            ; mov  si, column header
+BF 84 02            ; mov  di, row4 col2
+E8 6B 06            ; call print
+=0055
+31 DB               ; xor  bx, bx              row labels 0..F
+=0057
+89 D8               ; mov  ax, bx
+83 C0 05            ; add  ax, 5
+69 F8 A0 00         ; imul di, ax, 160
+83 C7 04            ; add  di, 4
+88 D8               ; mov  al, bl
+E8 68 06            ; call hexchar
+B4 0E               ; mov  ah, 0x0E
+65 89 05            ; mov  [gs:di], ax
+43                  ; inc  bx
+83 FB 10            ; cmp  bx, 16
+72 E4               ; jb   0x0057
+=0073
+BF 64 0E            ; mov  di, row23 col2      legend
+31 DB               ; xor  bx, bx
+=0078
+8A A7 B0 8A         ; mov  ah, [classattr+bx]
+89 DE               ; mov  si, bx
+C1 E6 04            ; shl  si, 4
+81 C6 E0 8A         ; add  si, classnames
+E8 38 06            ; call print
+43                  ; inc  bx
+83 FB 07            ; cmp  bx, 7
+72 EA               ; jb   0x0078
+=008E
+BE B0 8C            ; mov  si, help text
+BF 04 0F            ; mov  di, row24 col2
+B4 08               ; mov  ah, 0x08            dark grey
+E8 27 06            ; call print
+
+; ---- PCI scan for RTL8139 ----
+=0099
+66 BB 00 00 00 80   ; mov  ebx, 0x80000000
+=009F
+66 89 D8            ; mov  eax, ebx
+BA F8 0C            ; mov  dx, 0x0CF8
+66 EF               ; out  dx, eax
+B2 FC               ; mov  dl, 0xFC
+66 ED               ; in   eax, dx
+66 3D EC 10 39 81   ; cmp  eax, 0x813910EC
+74 1E               ; je   found (0x00D1)
+66 81 C3 00 01 00 00 ; add ebx, 0x100
+66 81 FB 00 00 00 81 ; cmp ebx, 0x81000000
+72 DC               ; jb   0x009F
+=00C3
+BE 00 8D            ; mov  si, "NO NETWORK CARD - STANDALONE MODE"
+BF 44 01            ; mov  di, row2 col2
+B4 0C               ; mov  ah, 0x0C
+E8 F2 05            ; call print
+E9 95 00            ; jmp  after_nic (0x0166)   myid stays 0 = run all 256
+
+; ---- found: enable device, read BAR0 and MAC ----
+=00D1
+66 89 D8            ; mov  eax, ebx
+0C 04               ; or   al, 0x04
+BA F8 0C            ; mov  dx, 0x0CF8
+66 EF               ; out  dx, eax
+B2 FC               ; mov  dl, 0xFC
+66 ED               ; in   eax, dx
+0C 05               ; or   al, 0x05            I/O space + bus master
+66 EF               ; out  dx, eax
+66 89 D8            ; mov  eax, ebx
+0C 10               ; or   al, 0x10            BAR0
+BA F8 0C            ; mov  dx, 0x0CF8
+66 EF               ; out  dx, eax
+B2 FC               ; mov  dl, 0xFC
+66 ED               ; in   eax, dx
+25 FC FF            ; and  ax, 0xFFFC
+A3 00 8A            ; mov  [iobase], ax
+89 C2               ; mov  dx, ax
+BF 26 8A            ; mov  di, frame.src
+B9 06 00            ; mov  cx, 6
+=00FF
+EC                  ; in   al, dx
+AA                  ; stosb
+42                  ; inc  dx
+E2 FB               ; loop 0x00FF
+A0 2B 8A            ; mov  al, [mac+5]         node id = last MAC byte
+3C 04               ; cmp  al, 4
+76 02               ; jbe  +2
+30 C0               ; xor  al, al
+=010D
+A2 02 8A            ; mov  [myid], al
+A2 31 8A            ; mov  [frame.id], al
+
+; ---- RTL8139 init ----
+=0113
+8B 16 00 8A         ; mov  dx, [iobase]
+83 C2 52            ; add  dx, 0x52            CONFIG1
+30 C0               ; xor  al, al
+EE                  ; out  dx, al              power on
+8B 16 00 8A         ; mov  dx, [iobase]
+83 C2 37            ; add  dx, 0x37            CR
+B0 10               ; mov  al, 0x10
+EE                  ; out  dx, al              reset
+=0127
+EC                  ; in   al, dx
+A8 10               ; test al, 0x10
+75 FB               ; jnz  0x0127
+8B 16 00 8A         ; mov  dx, [iobase]
+83 C2 30            ; add  dx, 0x30            RBSTART
+66 B8 00 00 01 00   ; mov  eax, 0x10000
+66 EF               ; out  dx, eax
+83 C2 0C            ; add  dx, 0x0C            IMR
+31 C0               ; xor  ax, ax
+EF                  ; out  dx, ax
+83 C2 08            ; add  dx, 0x08            RCR
+66 B8 8F 00 00 00   ; mov  eax, 0x8F           accept all + WRAP
+66 EF               ; out  dx, eax
+=014C
+8B 16 00 8A         ; mov  dx, [iobase]
+83 C2 37            ; add  dx, 0x37
+B0 0C               ; mov  al, 0x0C
+EE                  ; out  dx, al              RX + TX on
+BE 20 8A            ; mov  si, heartbeat frame
+BF 00 E0            ; mov  di, 0xE000          results frame
+B9 12 00            ; mov  cx, 18              copy dst, src, type, "D42", id
+F3 A4               ; rep  movsb
+C6 06 12 E0 52      ; mov  byte [0xE012], 'R'
+
+; ---- after_nic ----
+=0166
+0F B6 36 02 8A      ; movzx si, byte [myid]
+C1 E6 04            ; shl  si, 4
+81 C6 60 8A         ; add  si, names
+BF B6 00            ; mov  di, row1 col11
+B4 0B               ; mov  ah, 0x0B
+E8 46 05            ; call print               our name
+=017A
+A1 6C 04            ; mov  ax, [0x046C]
+2D 00 10            ; sub  ax, 0x1000
+BF 08 8A            ; mov  di, seen
+B9 05 00            ; mov  cx, 5
+F3 AB               ; rep  stosw               all nodes "long ago"
+E8 85 05            ; call explore             run our share of byte programs
+E8 52 0D            ; call explore_bits        ... and of bit programs
+E9 6F 00            ; jmp  main
+=0191
+
+; ===================== MAIN LOOP =====================================
+>0200
+E8 FD 00            ; call net_poll
+A1 6C 04            ; mov  ax, [0x046C]
+89 C3               ; mov  bx, ax
+2B 1E 06 8A         ; sub  bx, [lasttx]
+83 FB 12            ; cmp  bx, 18              one second?
+72 06               ; jb   +6
+A3 06 8A            ; mov  [lasttx], ax
+E8 69 00            ; call send
+=0217
+E8 A6 01            ; call key_handle
+E8 E3 01            ; call draw_status
+E8 60 02            ; call draw_grid
+E8 AD 0C            ; call draw_panel          byte or bit details
+F4                  ; hlt                      sleep until timer/keyboard
+EB DA               ; jmp  main
+=0226
+
+; ===================== tx: EAX = frame address, CX = length ==========
+>0240
+8B 16 00 8A         ; mov  dx, [iobase]
+0F B6 1E 03 8A      ; movzx bx, byte [txidx]
+C1 E3 02            ; shl  bx, 2
+01 DA               ; add  dx, bx
+83 C2 20            ; add  dx, 0x20            TSAD[n]
+66 EF               ; out  dx, eax
+83 EA 10            ; sub  dx, 0x10            TSD[n]
+66 0F B7 C1         ; movzx eax, cx
+66 EF               ; out  dx, eax             go
+FE 06 03 8A         ; inc  byte [txidx]
+80 26 03 8A 03      ; and  byte [txidx], 3
+C3                  ; ret
+=0266
+
+; ===================== send: heartbeat + one results frame ===========
+;  cycles through 4 frames: byte half 0, byte half 1, bit half 0, bit half 1
+>0280
+83 3E 00 8A 00      ; cmp  word [iobase], 0
+74 5C               ; je   ret                 no network
+66 B8 20 8A 00 00   ; mov  eax, heartbeat frame
+B9 3C 00            ; mov  cx, 60
+E8 AD FF            ; call tx
+=0293
+0F B6 06 02 8A      ; movzx ax, byte [myid]
+85 C0               ; test ax, ax
+74 47               ; jz   ret
+48                  ; dec  ax
+C1 E0 06            ; shl  ax, 6               first program = (id-1)*64
+FE 06 13 8A         ; inc  byte [txcycle]
+8A 1E 13 8A         ; mov  bl, [txcycle]
+F6 C3 01            ; test bl, 1
+74 03               ; jz   +3
+83 C0 20            ; add  ax, 32              second half
+=02B0
+A2 13 E0            ; mov  [0xE013], al        first program in frame
+89 C6               ; mov  si, ax
+C1 E6 05            ; shl  si, 5
+C6 06 12 E0 52      ; mov  byte [0xE012], 'R'  byte results
+81 C6 00 C0         ; add  si, 0xC000
+F6 C3 02            ; test bl, 2
+74 09               ; jz   +9
+C6 06 12 E0 42      ; mov  byte [0xE012], 'B'  bit results
+81 C6 00 60         ; add  si, 0x6000          0xC000+0x6000 wraps to 0x2000
+=02CF
+BF 14 E0            ; mov  di, 0xE014
+B9 00 04            ; mov  cx, 1024            32 records
+F3 A4               ; rep  movsb
+66 B8 00 E0 00 00   ; mov  eax, 0xE000
+B9 14 04            ; mov  cx, 0x414           frame length
+E8 5D FF            ; call tx
+=02E3
+C3                  ; ret
+
+; ===================== net_poll ======================================
+>0300
+8B 16 00 8A         ; mov  dx, [iobase]
+85 D2               ; test dx, dx
+75 01               ; jnz  +1
+=0308
+C3                  ; ret                      (no network / ring empty)
+83 C2 37            ; add  dx, 0x37
+EC                  ; in   al, dx
+A8 01               ; test al, 1               ring empty?
+75 F7               ; jnz  0x0308
+8B 36 04 8A         ; mov  si, [rxoff]
+1E                  ; push ds
+B8 00 10            ; mov  ax, 0x1000
+8E D8               ; mov  ds, ax
+8B 4C 02            ; mov  cx, [si+2]          length
+81 7C 10 88 B5      ; cmp  word [si+0x10], 0xB588
+75 4E               ; jne  skip
+81 7C 12 44 34      ; cmp  word [si+0x12], 'D4'
+75 47               ; jne  skip
+80 7C 14 32         ; cmp  byte [si+0x14], '2'
+75 41               ; jne  skip
+0F B6 5C 15         ; movzx bx, byte [si+0x15] sender id
+83 FB 04            ; cmp  bx, 4
+77 38               ; ja   skip
+D1 E3               ; shl  bx, 1
+26 A1 6C 04         ; mov  ax, [es:0x046C]
+26 89 87 08 8A      ; mov  [es:seen+bx], ax
+=0346
+B8 00 C0            ; mov  ax, 0xC000          'R' = byte results
+80 7C 16 52         ; cmp  byte [si+0x16], 'R'
+74 09               ; je   store
+B8 00 20            ; mov  ax, 0x2000          'B' = bit results
+80 7C 16 42         ; cmp  byte [si+0x16], 'B'
+75 1B               ; jne  skip
+=0358
+0F B6 7C 17         ; movzx di, byte [si+0x17] first program
+F7 C7 1F 00         ; test di, 0x1F            must be multiple of 32
+75 11               ; jnz  skip
+C1 E7 05            ; shl  di, 5
+01 C7               ; add  di, ax              table base
+56                  ; push si
+51                  ; push cx
+83 C6 18            ; add  si, 0x18
+B9 00 04            ; mov  cx, 1024
+F3 A4               ; rep  movsb               store 32 records
+59                  ; pop  cx
+5E                  ; pop  si
+=0373
+01 CE               ; add  si, cx              skip:
+83 C6 07            ; add  si, 7
+81 E6 FC 1F         ; and  si, 0x1FFC
+1F                  ; pop  ds
+89 36 04 8A         ; mov  [rxoff], si
+83 EE 10            ; sub  si, 0x10
+8B 16 00 8A         ; mov  dx, [iobase]
+83 C2 38            ; add  dx, 0x38            CAPR
+89 F0               ; mov  ax, si
+EF                  ; out  dx, ax
+E9 6F FF            ; jmp  net_poll
+=0391
+
+; ===================== key_handle: arrow keys move selection =========
+>03C0
+B4 01               ; mov  ah, 1
+CD 16               ; int  0x16                key waiting?
+74 34               ; jz   ret
+B4 00               ; mov  ah, 0
+CD 16               ; int  0x16                AH = scan code
+8A 1E 12 8A         ; mov  bl, [sel]
+80 FC 48            ; cmp  ah, 0x48            up
+75 03               ; jne  +3
+80 EB 10            ; sub  bl, 16
+80 FC 50            ; cmp  ah, 0x50            down
+75 03               ; jne  +3
+80 C3 10            ; add  bl, 16
+80 FC 4B            ; cmp  ah, 0x4B            left
+75 02               ; jne  +2
+FE CB               ; dec  bl
+80 FC 4D            ; cmp  ah, 0x4D            right
+75 02               ; jne  +2
+FE C3               ; inc  bl
+=03EC
+80 FC 0F            ; cmp  ah, 0x0F            TAB
+75 03               ; jne  +3
+E8 2C 0B            ; call toggle_mode
+=03F4
+88 1E 12 8A         ; mov  [sel], bl
+EB C6               ; jmp  key_handle
+=03FA
+C3                  ; ret
+
+; ===================== draw_status: cluster line (row 1) =============
+>0400
+BB 01 00            ; mov  bx, 1
+30 D2               ; xor  dl, dl
+BF DE 00            ; mov  di, row1 col31
+=0408
+89 DE               ; mov  si, bx
+D1 E6               ; shl  si, 1
+A1 6C 04            ; mov  ax, [0x046C]
+2B 84 08 8A         ; sub  ax, [seen+si]
+83 F8 37            ; cmp  ax, 55
+72 0A               ; jb   online
+3A 1E 02 8A         ; cmp  bl, [myid]
+74 04               ; je   online
+B4 0C               ; mov  ah, 0x0C            red
+EB 04               ; jmp  show
+=0422
+FE C2               ; inc  dl
+B4 0A               ; mov  ah, 0x0A            green
+=0426
+89 DE               ; mov  si, bx
+C1 E6 04            ; shl  si, 4
+81 C6 60 8A         ; add  si, names
+E8 8E 02            ; call print
+43                  ; inc  bx
+83 FB 05            ; cmp  bx, 5
+72 D0               ; jb   0x0408
+=0438
+BF 20 01            ; mov  di, row1 col64
+88 D0               ; mov  al, dl
+04 30               ; add  al, '0'
+B4 0F               ; mov  ah, 0x0F
+65 89 05            ; mov  [gs:di], ax
+83 C7 02            ; add  di, 2
+BE 30 8C            ; mov  si, "/4 ONLINE"
+E8 73 02            ; call print
+C3                  ; ret
+=044E
+
+; ===================== draw_grid: 16x16 program map ==================
+>0480
+31 DB               ; xor  bx, bx              program 0..255
+=0482
+89 D8               ; mov  ax, bx
+C1 E8 04            ; shr  ax, 4
+83 C0 05            ; add  ax, 5               row 5 + high nibble
+69 F8 A0 00         ; imul di, ax, 160
+89 D8               ; mov  ax, bx
+83 E0 0F            ; and  ax, 0x0F
+6B C0 06            ; imul ax, ax, 6           3 columns per cell
+01 C7               ; add  di, ax
+83 C7 0A            ; add  di, 10              column 5
+89 DE               ; mov  si, bx
+C1 E6 05            ; shl  si, 5
+03 36 14 8A         ; add  si, [tbase]         byte or bit result table
+0F B6 34            ; movzx si, byte [si]      class
+8A A4 B0 8A         ; mov  ah, [classattr+si]
+3A 1E 12 8A         ; cmp  bl, [sel]
+75 02               ; jne  +2
+B4 4F               ; mov  ah, 0x4F            selected: white on red
+=04B3
+88 D8               ; mov  al, bl
+C0 E8 04            ; shr  al, 4
+E8 15 02            ; call hexchar
+65 89 05            ; mov  [gs:di], ax
+88 D8               ; mov  al, bl
+24 0F               ; and  al, 0x0F
+E8 0B 02            ; call hexchar
+65 89 45 02         ; mov  [gs:di+2], ax
+43                  ; inc  bx
+81 FB 00 01         ; cmp  bx, 256
+72 B2               ; jb   0x0482
+=04D0
+C3                  ; ret
+
+; ===================== draw_detail: selected program =================
+>0500
+0F B6 1E 12 8A      ; movzx bx, byte [sel]
+89 DD               ; mov  bp, bx
+C1 E5 05            ; shl  bp, 5
+81 C5 00 C0         ; add  bp, 0xC000          BP -> record
+BF 50 02            ; mov  di, row3 col56
+BE 30 8D            ; mov  si, "PROGRAM: "
+B4 0F               ; mov  ah, 0x0F
+E8 A7 01            ; call print
+=0519
+88 D8               ; mov  al, bl
+E8 C2 01            ; call hexbyte
+BF F0 02            ; mov  di, row4 col56      mnemonic
+B4 0B               ; mov  ah, 0x0B
+89 DE               ; mov  si, bx
+C1 EE 04            ; shr  si, 4
+C1 E6 03            ; shl  si, 3
+81 C6 50 8B         ; add  si, optable
+E8 8E 01            ; call print
+=0532
+88 D8               ; mov  al, bl
+24 0F               ; and  al, 0x0F
+E8 97 01            ; call hexchar             operand
+65 89 05            ; mov  [gs:di], ax
+BF 90 03            ; mov  di, row5 col56
+BE 40 8D            ; mov  si, "CLASS:   "
+B4 07               ; mov  ah, 0x07
+E8 79 01            ; call print
+=0547
+0F B6 76 00         ; movzx si, byte [bp+0]
+8A A4 B0 8A         ; mov  ah, [classattr+si]
+C1 E6 04            ; shl  si, 4
+81 C6 E0 8A         ; add  si, classnames
+E8 67 01            ; call print
+=0559
+BF 30 04            ; mov  di, row6 col56
+BE 50 8D            ; mov  si, "BY NODE: "
+B4 07               ; mov  ah, 0x07
+E8 5C 01            ; call print
+0F B6 76 05         ; movzx si, byte [bp+5]
+C1 E6 04            ; shl  si, 4
+81 C6 60 8A         ; add  si, names
+B4 0B               ; mov  ah, 0x0B
+E8 4C 01            ; call print
+=0574
+BF D0 04            ; mov  di, row7 col56
+BE 60 8D            ; mov  si, "STEPS:   "
+B4 07               ; mov  ah, 0x07
+E8 41 01            ; call print
+8A 46 02            ; mov  al, [bp+2]
+B4 0F               ; mov  ah, 0x0F
+E8 59 01            ; call hexbyte
+=0587
+BF 70 05            ; mov  di, row8 col56
+BE 70 8D            ; mov  si, "A:       "
+B4 07               ; mov  ah, 0x07
+E8 2E 01            ; call print
+8A 46 01            ; mov  al, [bp+1]
+B4 0F               ; mov  ah, 0x0F
+E8 46 01            ; call hexbyte
+=059A
+BF 10 06            ; mov  di, row9 col56
+BE 80 8D            ; mov  si, "OUTPUTS: "
+B4 07               ; mov  ah, 0x07
+E8 1B 01            ; call print
+8A 46 03            ; mov  al, [bp+3]
+B4 0F               ; mov  ah, 0x0F
+E8 33 01            ; call hexbyte
+=05AD
+BF B0 06            ; mov  di, row10 col56
+8D 76 08            ; lea  si, [bp+8]
+B9 08 00            ; mov  cx, 8
+B4 0A               ; mov  ah, 0x0A
+E8 45 01            ; call hexrow              first 8 outputs
+=05BB
+BF 50 07            ; mov  di, row11 col56
+BE 90 8D            ; mov  si, "MEMORY M0-M7:"
+B4 07               ; mov  ah, 0x07
+E8 FA 00            ; call print
+BF F0 07            ; mov  di, row12 col56
+8D 76 10            ; lea  si, [bp+16]
+B9 08 00            ; mov  cx, 8
+B4 0E               ; mov  ah, 0x0E
+E8 2C 01            ; call hexrow
+=05D4
+BF 90 08            ; mov  di, row13 col56
+BE A0 8D            ; mov  si, "DISPLAY (ALL 64 STEPS):"
+B4 07               ; mov  ah, 0x07
+E8 E1 00            ; call print
+8D 76 18            ; lea  si, [bp+24]         8 display rows
+BF 30 09            ; mov  di, row14 col56
+BB 08 00            ; mov  bx, 8
+=05E8
+AC                  ; lodsb
+88 C2               ; mov  dl, al
+B9 08 00            ; mov  cx, 8
+57                  ; push di
+=05EF
+B8 FA 08            ; mov  ax, 0x08FA          dark dot
+D0 E2               ; shl  dl, 1
+73 03               ; jnc  +3
+B8 DB 0A            ; mov  ax, 0x0ADB          green block
+=05F9
+65 89 05            ; mov  [gs:di], ax
+65 89 45 02         ; mov  [gs:di+2], ax       pixels are 2 chars wide
+83 C7 04            ; add  di, 4
+E2 EA               ; loop 0x05EF
+5F                  ; pop  di
+81 C7 A0 00         ; add  di, 160
+4B                  ; dec  bx
+75 DB               ; jnz  0x05E8
+=060D
+C3                  ; ret
+
+; ===================== print =========================================
+;  in: SI text (0-terminated), GS:DI screen, AH colour. DI advances.
+>06C0
+AC                  ; lodsb
+84 C0               ; test al, al
+74 08               ; jz   ret
+65 89 05            ; mov  [gs:di], ax
+83 C7 02            ; add  di, 2
+EB F3               ; jmp  print
+=06CD
+C3                  ; ret
+
+; ===================== hexchar: AL 0..15 -> '0'..'F' =================
+>06D0
+3C 0A               ; cmp  al, 10
+72 02               ; jb   +2
+04 07               ; add  al, 7
+04 30               ; add  al, '0'
+C3                  ; ret
+
+; ===================== hexbyte: AL as 2 hex chars at DI, DI += 4 =====
+>06E0
+50                  ; push ax
+C0 E8 04            ; shr  al, 4
+E8 E9 FF            ; call hexchar
+65 89 05            ; mov  [gs:di], ax
+58                  ; pop  ax
+24 0F               ; and  al, 0x0F
+E8 E0 FF            ; call hexchar
+65 89 45 02         ; mov  [gs:di+2], ax
+83 C7 04            ; add  di, 4
+C3                  ; ret
+
+; ===================== hexrow: CX bytes from SI as "XX " =============
+>0700
+AC                  ; lodsb
+E8 DC FF            ; call hexbyte
+83 C7 02            ; add  di, 2
+E2 F7               ; loop hexrow
+C3                  ; ret
+
+; ===================== explore: run this node's share ================
+;  node 1..4 runs programs (id-1)*64 .. +63, standalone (id 0) runs all
+>0710
+0F B6 06 02 8A      ; movzx ax, byte [myid]
+31 DB               ; xor  bx, bx              start = 0
+BA 00 01            ; mov  dx, 256             end = 256
+85 C0               ; test ax, ax
+74 0B               ; jz   +11
+48                  ; dec  ax
+C1 E0 06            ; shl  ax, 6
+89 C3               ; mov  bx, ax
+89 DA               ; mov  dx, bx
+83 C2 40            ; add  dx, 64
+=0729
+89 1E 70 06         ; mov  [cur], bx
+89 16 72 06         ; mov  [end], dx
+=0731
+A1 70 06            ; mov  ax, [cur]
+3B 06 72 06         ; cmp  ax, [end]
+73 11               ; jae  ret
+A2 60 06            ; mov  [prog], al
+C6 06 61 06 01      ; mov  byte [proglen], 1
+E8 1B 00            ; call nano_run
+FF 06 70 06         ; inc  word [cur]
+EB E6               ; jmp  0x0731
+=074B
+C3                  ; ret
+
+; ===================== nano_run: simulate one program ================
+>0760
+BF 00 06            ; mov  di, 0x0600
+B9 30 00            ; mov  cx, 48
+31 C0               ; xor  ax, ax
+F3 AB               ; rep  stosw               clear CPU state + trace
+A0 60 06            ; mov  al, [prog]
+A2 00 06            ; mov  [M0], al            load program
+; ---- step loop ----
+=0770
+BE 00 06            ; mov  si, M
+BF 40 06            ; mov  di, trace
+B9 10 00            ; mov  cx, 16
+=0779
+AC                  ; lodsb
+08 05               ; or   [di], al            trace |= M
+47                  ; inc  di
+E2 FA               ; loop 0x0779
+A0 10 06            ; mov  al, [A]
+08 06 50 06         ; or   [traceA], al
+80 3E 12 06 40      ; cmp  byte [steps], 64
+72 03               ; jb   +3
+E9 70 01            ; jmp  nano_done
+=0790
+FE 06 12 06         ; inc  byte [steps]
+0F B6 1E 11 06      ; movzx bx, byte [PC]
+8A 8F 00 06         ; mov  cl, [M+bx]          fetch
+43                  ; inc  bx
+3A 1E 61 06         ; cmp  bl, [proglen]
+72 02               ; jb   +2
+30 DB               ; xor  bl, bl              wrap PC
+=07A6
+88 1E 11 06         ; mov  [PC], bl
+0F B6 F1            ; movzx si, cl
+83 E6 0F            ; and  si, 0x0F            SI = operand n
+0F B6 D9            ; movzx bx, cl
+C1 EB 04            ; shr  bx, 4
+D1 E3               ; shl  bx, 1               BX = opcode * 2
+A0 10 06            ; mov  al, [A]
+FF A7 B8 8A         ; jmp  [optable_jump+bx]   execute
+=07BF
+A2 10 06            ; mov  [A], al             store_a:
+EB AC               ; jmp  0x0770
+; ---- instructions (AL = A, SI = n) ----
+=07C4
+EB AA               ; 0 NOP:  jmp step
+=07C6
+89 F0               ; 1 LDI:  mov ax, si
+EB F5               ;         jmp store_a
+=07CA
+01 F0               ; 2 ADDI: add ax, si
+EB F1               ;         jmp store_a
+=07CE
+29 F0               ; 3 SUBI: sub ax, si
+EB ED               ;         jmp store_a
+=07D2
+8A 84 00 06         ; 4 LD:   mov al, [M+si]
+EB E7               ;         jmp store_a
+=07D8
+88 84 00 06         ; 5 ST:   mov [M+si], al
+EB 92               ;         jmp step
+=07DE
+02 84 00 06         ; 6 ADD:  add al, [M+si]
+EB DB               ;         jmp store_a
+=07E4
+84 C0               ; 8 JZ:   test al, al
+75 88               ;         jnz step
+=07E8
+89 F0               ; 7 JMP:  mov ax, si
+F6 36 61 06         ;         div byte [proglen]
+88 26 11 06         ;         mov [PC], ah     PC = n mod length
+E9 7B FF            ;         jmp step
+=07F5
+FE 84 00 06         ; 9 INC:  inc byte [M+si]
+E9 74 FF            ;         jmp step
+=07FC
+FE 8C 00 06         ; A DEC:  dec byte [M+si]
+E9 6D FF            ;         jmp step
+=0803
+89 F1               ; B ROL:  mov cx, si
+80 E1 07            ;         and cl, 7
+D2 C0               ;         rol al, cl
+EB B3               ;         jmp store_a
+=080C
+32 84 00 06         ; C XOR:  xor al, [M+si]
+EB AD               ;         jmp store_a
+=0812
+F6 94 00 06         ; E NOT:  not byte [M+si]
+E9 57 FF            ;         jmp step
+=0819
+8A 8C 00 06         ; D OUT:  mov cl, [M+si]
+0F B6 1E 13 06      ;         movzx bx, byte [outcnt]
+80 FB 08            ;         cmp bl, 8
+73 04               ;         jae +4
+88 8F 18 06         ;         mov [outputs+bx], cl
+=082B
+FE 06 13 06         ;         inc byte [outcnt]
+E9 3E FF            ;         jmp step
+=0832
+C6 06 14 06 01      ; F HLT:  mov byte [halted], 1
+E9 C6 00            ;         jmp nano_done
+=083A
+
+; ===================== nano_done: classify + store record ============
+>0900
+0F B6 3E 60 06      ; movzx di, byte [prog]
+C1 E7 05            ; shl  di, 5
+81 C7 00 C0         ; add  di, 0xC000          DI -> record
+A0 10 06            ; mov  al, [A]
+88 45 01            ; mov  [di+1], al
+A0 12 06            ; mov  al, [steps]
+88 45 02            ; mov  [di+2], al
+A0 13 06            ; mov  al, [outcnt]
+88 45 03            ; mov  [di+3], al
+A0 00 06            ; mov  al, [M0]
+88 45 04            ; mov  [di+4], al
+A0 02 8A            ; mov  al, [myid]
+88 45 05            ; mov  [di+5], al
+=092A
+57                  ; push di
+83 C7 08            ; add  di, 8
+BE 18 06            ; mov  si, outputs
+B9 08 00            ; mov  cx, 8
+F3 A4               ; rep  movsb
+BE 00 06            ; mov  si, M0
+B9 08 00            ; mov  cx, 8
+F3 A4               ; rep  movsb
+BE 48 06            ; mov  si, trace+8         display, all steps
+B9 08 00            ; mov  cx, 8
+F3 A4               ; rep  movsb
+5F                  ; pop  di
+=0947
+B3 06               ; mov  bl, 6               DRAW?
+BE 48 06            ; mov  si, trace+8
+B9 08 00            ; mov  cx, 8
+=094F
+AC                  ; lodsb
+84 C0               ; test al, al
+75 37               ; jnz  set
+E2 F9               ; loop 0x094F
+FE CB               ; dec  bl                  5 OUTPUT?
+80 3E 13 06 00      ; cmp  byte [outcnt], 0
+75 2C               ; jne  set
+FE CB               ; dec  bl                  4 SELF-MOD?
+A0 00 06            ; mov  al, [M0]
+3A 06 60 06         ; cmp  al, [prog]
+75 21               ; jne  set
+FE CB               ; dec  bl                  3 ACTIVE?
+80 3E 50 06 00      ; cmp  byte [traceA], 0
+75 18               ; jne  set
+BE 41 06            ; mov  si, trace+1
+B9 07 00            ; mov  cx, 7
+=0979
+AC                  ; lodsb
+84 C0               ; test al, al
+75 0D               ; jnz  set
+E2 F9               ; loop 0x0979
+FE CB               ; dec  bl                  2 HALT?
+80 3E 14 06 00      ; cmp  byte [halted], 0
+75 02               ; jne  set
+FE CB               ; dec  bl                  1 IDLE
+=098B
+88 1D               ; mov  [di], bl            set: store class
+C3                  ; ret
+
+; ===================== DATA ==========================================
+>0A00
+00 00               ; iobase
+00                  ; myid
+00                  ; txidx
+00 00               ; rxoff
+00 00               ; lasttx
+=0A08
+00 00 00 00 00 00 00 00 00 00   ; seen[0..4]
+00                  ; sel       selected program
+00                  ; txcycle   which results frame to send next (0..3)
+00 C0               ; tbase     result table shown in grid (C000 byte / 2000 bit)
+00                  ; mode      0 = byte programs, 1 = bit programs
+
+; ---- heartbeat frame (60 bytes) ----
+>0A20
+FF FF FF FF FF FF   ; destination: broadcast
+00 00 00 00 00 00   ; source: our MAC (filled at boot)
+88 B5               ; ethertype: Dimension42 cluster protocol
+44 34 32            ; "D42"
+00                  ; node id (filled at boot)
+00                  ; type 0 = heartbeat
+>0A5C
+
+; ---- node names, 16 bytes each, index = node id ----
+>0A60
+55 4E 4B 4E 4F 57 4E 20 00 00 00 00 00 00 00 00  ; 0 "UNKNOWN "
+53 50 45 43 48 54 20 20 00 00 00 00 00 00 00 00  ; 1 "SPECHT  "
+41 44 4C 45 52 20 20 20 00 00 00 00 00 00 00 00  ; 2 "ADLER   "
+4B 4E 45 43 48 54 20 20 00 00 00 00 00 00 00 00  ; 3 "KNECHT  "
+46 41 4C 4B 45 20 20 20 00 00 00 00 00 00 00 00  ; 4 "FALKE   "
+
+; ---- class colours: pending idle halt active self-mod output draw ----
+=0AB0
+01 08 04 0B 0E 0A 0D 00
+
+; ---- NANO instruction jump table (handler address per opcode) ----
+=0AB8
+C4 87  C6 87  CA 87  CE 87   ; 0 NOP  1 LDI  2 ADDI 3 SUBI
+D2 87  D8 87  DE 87  E8 87   ; 4 LD   5 ST   6 ADD  7 JMP
+E4 87  F5 87  FC 87  03 88   ; 8 JZ   9 INC  A DEC  B ROL
+0C 88  19 88  12 88  32 88   ; C XOR  D OUT  E NOT  F HLT
+=0AD8
+
+; ---- class names, 16 bytes each, index = class ----
+>0AE0                   ; class 0
+50 45 4E 44 49 4E 47 20 20 00 00 00 00 00 00 00  ; "PENDING  "
+=0AF0                   ; class 1
+49 44 4C 45 20 20 20 20 20 00 00 00 00 00 00 00  ; "IDLE     "
+=0B00                   ; class 2
+48 41 4C 54 20 20 20 20 20 00 00 00 00 00 00 00  ; "HALT     "
+=0B10                   ; class 3
+41 43 54 49 56 45 20 20 20 00 00 00 00 00 00 00  ; "ACTIVE   "
+=0B20                   ; class 4
+53 45 4C 46 2D 4D 4F 44 20 00 00 00 00 00 00 00  ; "SELF-MOD "
+=0B30                   ; class 5
+4F 55 54 50 55 54 20 20 20 00 00 00 00 00 00 00  ; "OUTPUT   "
+=0B40                   ; class 6
+44 52 41 57 20 20 20 20 20 00 00 00 00 00 00 00  ; "DRAW     "
+; ---- NANO instruction names, 8 bytes each, index = opcode (high nibble) ----
+=0B50
+4E 4F 50 20 20 20 20 00                          ; 0 "NOP    "
+4C 44 49 20 20 20 23 00                          ; 1 "LDI   #"
+41 44 44 49 20 20 23 00                          ; 2 "ADDI  #"
+53 55 42 49 20 20 23 00                          ; 3 "SUBI  #"
+4C 44 20 20 20 20 4D 00                          ; 4 "LD    M"
+53 54 20 20 20 20 4D 00                          ; 5 "ST    M"
+41 44 44 20 20 20 4D 00                          ; 6 "ADD   M"
+4A 4D 50 20 20 20 40 00                          ; 7 "JMP   @"
+4A 5A 20 20 20 20 40 00                          ; 8 "JZ    @"
+49 4E 43 20 20 20 4D 00                          ; 9 "INC   M"
+44 45 43 20 20 20 4D 00                          ; A "DEC   M"
+52 4F 4C 20 20 20 23 00                          ; B "ROL   #"
+58 4F 52 20 20 20 4D 00                          ; C "XOR   M"
+4F 55 54 20 20 20 4D 00                          ; D "OUT   M"
+4E 4F 54 20 20 20 4D 00                          ; E "NOT   M"
+48 4C 54 20 20 20 20 00                          ; F "HLT    "
+; ---- strings ----
+=0BD0
+20 44 49 4D 45 4E 53 49 4F 4E 34 32 20 4F 53 20  ; " DIMENSION42 OS "
+76 30 2E 33 20 20 20 2D 20 20 20 4F 4E 45 20 53  ; "v0.3   -   ONE S"
+59 53 54 45 4D 20 4F 4E 20 46 4F 55 52 20 4D 41  ; "YSTEM ON FOUR MA"
+43 48 49 4E 45 53 00 00 00 00 00 00 00 00 00 00  ; "CHINES"
+=0C10
+54 48 49 53 20 50 43 3A 20 00 00 00 00 00 00 00  ; "THIS PC: "
+=0C20
+43 4C 55 53 54 45 52 3A 20 00 00 00 00 00 00 00  ; "CLUSTER: "
+=0C30
+2F 34 20 4F 4E 4C 49 4E 45 00 00 00 00 00 00 00  ; "/4 ONLINE"
+=0C40
+45 58 50 4C 4F 52 45 52 3A 20 41 4C 4C 20 32 35  ; "EXPLORER: ALL 25"
+36 20 4F 4E 45 2D 42 59 54 45 20 50 52 4F 47 52  ; "6 ONE-BYTE PROGR"
+41 4D 53 20 20 20 20 20 20 00 00 00 00 00 00 00  ; "AMS      "
+=0C70
+20 20 20 30 20 20 31 20 20 32 20 20 33 20 20 34  ; "   0  1  2  3  4"
+20 20 35 20 20 36 20 20 37 20 20 38 20 20 39 20  ; "  5  6  7  8  9 "
+20 41 20 20 42 20 20 43 20 20 44 20 20 45 20 20  ; " A  B  C  D  E  "
+46 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ; "F"
+=0CB0
+41 52 52 4F 57 53 3A 20 53 45 4C 45 43 54 20 50  ; "ARROWS: SELECT P"
+52 4F 47 52 41 4D 20 20 20 20 54 41 42 3A 20 53  ; "ROGRAM    TAB: S"
+57 49 54 43 48 20 42 59 54 45 20 2F 20 42 49 54  ; "WITCH BYTE / BIT"
+20 50 52 4F 47 52 41 4D 53 00 00 00 00 00 00 00  ; " PROGRAMS"
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+=0D00
+4E 4F 20 4E 45 54 57 4F 52 4B 20 43 41 52 44 20  ; "NO NETWORK CARD "
+2D 20 53 54 41 4E 44 41 4C 4F 4E 45 20 4D 4F 44  ; "- STANDALONE MOD"
+45 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ; "E"
+=0D30
+50 52 4F 47 52 41 4D 3A 20 00 00 00 00 00 00 00  ; "PROGRAM: "
+=0D40
+43 4C 41 53 53 3A 20 20 20 00 00 00 00 00 00 00  ; "CLASS:   "
+=0D50
+42 59 20 4E 4F 44 45 3A 20 00 00 00 00 00 00 00  ; "BY NODE: "
+=0D60
+53 54 45 50 53 3A 20 20 20 00 00 00 00 00 00 00  ; "STEPS:   "
+=0D70
+41 3A 20 20 20 20 20 20 20 00 00 00 00 00 00 00  ; "A:       "
+=0D80
+4F 55 54 50 55 54 53 3A 20 00 00 00 00 00 00 00  ; "OUTPUTS: "
+=0D90
+4D 45 4D 4F 52 59 20 4D 30 2D 4D 37 3A 00 00 00  ; "MEMORY M0-M7:"
+=0DA0
+44 49 53 50 4C 41 59 20 28 41 4C 4C 20 36 34 20  ; "DISPLAY (ALL 64 "
+53 54 45 50 53 29 3A 00                          ; "STEPS):"
+=0DB8
+
+; =====================================================================
+;  v0.3  BIT PROGRAMS
+; =====================================================================
+;  BIT CPU: every instruction is ONE bit.
+;    0 = FLIP the pixel under the head
+;    1 = MOVE the head one pixel right (64 pixels, wraps)
+;  The 8x8 display is a 64-pixel tape, read row by row.
+;  A program of L bits repeats for 128 steps.
+;  Grid index encodes the program: a leading 1 marks the length,
+;  the bits after it are the program, e.g.
+;    02 = 10b       -> "0"        03 = 11b       -> "1"
+;    05 = 101b      -> "01"       FF = 11111111b -> "1111111"
+;  so cells 02..FF hold every program of 1 to 7 bits (254 programs).
+;  Classes: DRAW (final display not empty), ACTIVE (pixels were lit
+;  but the display ended empty, e.g. blinking), IDLE (nothing lit).
+;
+;  BIT CPU STATE (0x06xx)
+;    80-87 display/tape  88 head  89 flips  8A PC  8B steps  8C length
+;    90 program index
+;  BIT RECORD (32 bytes, table at 0x2000 + index*32)
+;    +0 class  +1 head  +2 steps  +3 flips  +4 length  +5 node
+;    +24..31 final display
+
+; ===================== bit_run: simulate one bit program =============
+>0E00
+BF 80 06            ; mov  di, tape
+B9 08 00            ; mov  cx, 8
+31 C0               ; xor  ax, ax
+F3 AB               ; rep  stosw               clear 0680..068F
+A0 90 06            ; mov  al, [index]
+=0E0D
+3C 01               ; cmp  al, 1               length = position of the leading 1
+76 08               ; jbe  +8
+D0 E8               ; shr  al, 1
+FE 06 8C 06         ; inc  byte [length]
+EB F4               ; jmp  0x0E0D
+=0E19
+80 3E 8C 06 00      ; cmp  byte [length], 0
+74 56               ; je   done                empty program
+=0E20
+80 3E 8B 06 80      ; cmp  byte [steps], 128
+73 4F               ; jae  done
+FE 06 8B 06         ; inc  byte [steps]
+8A 0E 8C 06         ; mov  cl, [length]
+2A 0E 8A 06         ; sub  cl, [PC]
+FE C9               ; dec  cl                  bit number = length-1-PC
+A0 90 06            ; mov  al, [index]
+D2 E8               ; shr  al, cl
+A8 01               ; test al, 1
+75 1B               ; jnz  move
+0F B6 1E 88 06      ; movzx bx, byte [head]    FLIP:
+88 D9               ; mov  cl, bl
+80 E1 07            ; and  cl, 7
+C1 EB 03            ; shr  bx, 3               byte = head/8
+B0 80               ; mov  al, 0x80
+D2 E8               ; shr  al, cl              bit  = head%8
+30 87 80 06         ; xor  [tape+bx], al
+FE 06 89 06         ; inc  byte [flips]
+EB 09               ; jmp  next
+=0E59
+FE 06 88 06         ; inc  byte [head]         MOVE:
+80 26 88 06 3F      ; and  byte [head], 63
+=0E62
+FE 06 8A 06         ; inc  byte [PC]           next:
+A0 8A 06            ; mov  al, [PC]
+3A 06 8C 06         ; cmp  al, [length]
+72 B1               ; jb   step
+C6 06 8A 06 00      ; mov  byte [PC], 0        wrap: program repeats
+EB AA               ; jmp  step
+=0E76
+0F B6 3E 90 06      ; movzx di, byte [index]   done:
+C1 E7 05            ; shl  di, 5
+81 C7 00 20         ; add  di, 0x2000          DI -> record
+B3 06               ; mov  bl, 6               DRAW?
+BE 80 06            ; mov  si, tape
+B9 08 00            ; mov  cx, 8
+=0E8A
+AC                  ; lodsb
+84 C0               ; test al, al
+75 0D               ; jnz  set
+E2 F9               ; loop 0x0E8A
+B3 03               ; mov  bl, 3               ACTIVE?
+80 3E 89 06 00      ; cmp  byte [flips], 0
+75 02               ; jne  set
+B3 01               ; mov  bl, 1               IDLE
+=0E9C
+88 1D               ; mov  [di], bl
+A0 88 06            ; mov  al, [head]
+88 45 01            ; mov  [di+1], al
+A0 8B 06            ; mov  al, [steps]
+88 45 02            ; mov  [di+2], al
+A0 89 06            ; mov  al, [flips]
+88 45 03            ; mov  [di+3], al
+A0 8C 06            ; mov  al, [length]
+88 45 04            ; mov  [di+4], al
+A0 02 8A            ; mov  al, [myid]
+88 45 05            ; mov  [di+5], al
+83 C7 18            ; add  di, 24
+BE 80 06            ; mov  si, tape
+B9 08 00            ; mov  cx, 8
+F3 A4               ; rep  movsb               final display
+C3                  ; ret
+=0EC8
+
+; ===================== draw_panel: details for current mode ==========
+>0ED0
+80 3E 16 8A 00      ; cmp  byte [mode], 0
+75 03               ; jne  +3
+E9 26 F6            ; jmp  draw_detail         byte program
+=0EDA
+E9 A3 00            ; jmp  draw_detail_bits    bit program
+
+; ===================== explore_bits: run this node's share ===========
+>0EE0
+0F B6 06 02 8A      ; movzx ax, byte [myid]
+31 DB               ; xor  bx, bx
+BA 00 01            ; mov  dx, 256
+85 C0               ; test ax, ax
+74 0B               ; jz   +11
+48                  ; dec  ax
+C1 E0 06            ; shl  ax, 6
+89 C3               ; mov  bx, ax
+89 DA               ; mov  dx, bx
+83 C2 40            ; add  dx, 64
+=0EF9
+89 1E 70 06         ; mov  [cur], bx
+89 16 72 06         ; mov  [end], dx
+=0F01
+A1 70 06            ; mov  ax, [cur]
+3B 06 72 06         ; cmp  ax, [end]
+73 0C               ; jae  ret
+A2 90 06            ; mov  [index], al
+E8 F0 FE            ; call bit_run
+FF 06 70 06         ; inc  word [cur]
+EB EB               ; jmp  0x0F01
+=0F16
+C3                  ; ret
+
+; ===================== toggle_mode: TAB switches byte <-> bit ========
+;  keeps BL (selection)
+>0F20
+80 36 16 8A 01      ; xor  byte [mode], 1
+C7 06 14 8A 00 C0   ; mov  word [tbase], 0xC000
+74 06               ; jz   +6                  flags still from xor
+C7 06 14 8A 00 20   ; mov  word [tbase], 0x2000
+=0F33
+E8 2A 00            ; call clear_panel
+BE 40 8C            ; mov  si, byte heading
+80 3E 16 8A 00      ; cmp  byte [mode], 0
+74 03               ; je   +3
+BE 00 91            ; mov  si, bit heading
+=0F43
+BF E4 01            ; mov  di, row3 col2
+B4 0E               ; mov  ah, 0x0E
+E8 75 F7            ; call print
+C3                  ; ret
+
+; ===================== clear_panel: rows 3..22, columns 56..79 =======
+>0F60
+BF 50 02            ; mov  di, row3 col56
+BA 14 00            ; mov  dx, 20
+=0F66
+B9 18 00            ; mov  cx, 24
+57                  ; push di
+=0F6A
+65 C7 05 20 07      ; mov  word [gs:di], 0x0720   space
+83 C7 02            ; add  di, 2
+E2 F6               ; loop 0x0F6A
+5F                  ; pop  di
+81 C7 A0 00         ; add  di, 160
+4A                  ; dec  dx
+75 EA               ; jnz  0x0F66
+C3                  ; ret
+
+; ===================== draw_detail_bits ==============================
+>0F80
+0F B6 1E 12 8A      ; movzx bx, byte [sel]
+89 DD               ; mov  bp, bx
+C1 E5 05            ; shl  bp, 5
+81 C5 00 20         ; add  bp, 0x2000          BP -> bit record
+BF 50 02            ; mov  di, row3 col56
+BE 30 8D            ; mov  si, PROGRAM label
+B4 0F               ; mov  ah, 0x0F
+E8 27 F7            ; call print
+=0F99
+88 D8               ; mov  al, bl
+E8 42 F7            ; call hexbyte
+BF F0 02            ; mov  di, row4 col56
+BE 80 90            ; mov  si, BITS label
+B4 07               ; mov  ah, 0x07
+E8 17 F7            ; call print
+=0FA9
+57                  ; push di
+B9 07 00            ; mov  cx, 7
+B8 20 07            ; mov  ax, 0x0720
+=0FB0
+65 89 05            ; mov  [gs:di], ax         clear old bits
+83 C7 02            ; add  di, 2
+E2 F8               ; loop 0x0FB0
+5F                  ; pop  di
+0F B6 4E 04         ; movzx cx, byte [bp+4]    length
+E3 15               ; jcxz +21
+=0FBF
+49                  ; dec  cx                  print bits, first bit first
+88 D8               ; mov  al, bl
+D2 E8               ; shr  al, cl
+24 01               ; and  al, 1
+04 30               ; add  al, 0x30            digit
+B4 0B               ; mov  ah, 0x0B
+65 89 05            ; mov  [gs:di], ax
+83 C7 02            ; add  di, 2
+85 C9               ; test cx, cx
+75 EB               ; jnz  0x0FBF
+=0FD4
+BF 90 03            ; mov  di, row5 col56
+BE 40 8D            ; mov  si, CLASS label
+B4 07               ; mov  ah, 0x07
+E8 E1 F6            ; call print
+0F B6 76 00         ; movzx si, byte [bp+0]
+8A A4 B0 8A         ; mov  ah, [classattr+si]
+C1 E6 04            ; shl  si, 4
+81 C6 E0 8A         ; add  si, classnames
+E8 CF F6            ; call print
+=0FF1
+BF 30 04            ; mov  di, row6 col56
+BE 50 8D            ; mov  si, BY NODE label
+B4 07               ; mov  ah, 0x07
+E8 C4 F6            ; call print
+0F B6 76 05         ; movzx si, byte [bp+5]
+C1 E6 04            ; shl  si, 4
+81 C6 60 8A         ; add  si, names
+B4 0B               ; mov  ah, 0x0B
+E8 B4 F6            ; call print
+=100C
+BF D0 04            ; mov  di, row7 col56
+BE 90 90            ; mov  si, LENGTH label
+B4 07               ; mov  ah, 0x07
+E8 A9 F6            ; call print
+8A 46 04            ; mov  al, [bp+4]
+B4 0F               ; mov  ah, 0x0F
+E8 C1 F6            ; call hexbyte
+=101F
+BF 70 05            ; mov  di, row8 col56
+BE A0 90            ; mov  si, FLIPS label
+B4 07               ; mov  ah, 0x07
+E8 96 F6            ; call print
+8A 46 03            ; mov  al, [bp+3]
+B4 0F               ; mov  ah, 0x0F
+E8 AE F6            ; call hexbyte
+=1032
+BF 10 06            ; mov  di, row9 col56
+BE B0 90            ; mov  si, HEAD label
+B4 07               ; mov  ah, 0x07
+E8 83 F6            ; call print
+8A 46 01            ; mov  al, [bp+1]
+B4 0F               ; mov  ah, 0x0F
+E8 9B F6            ; call hexbyte
+=1045
+BF B0 06            ; mov  di, row10 col56
+BE 60 8D            ; mov  si, STEPS label
+B4 07               ; mov  ah, 0x07
+E8 70 F6            ; call print
+8A 46 02            ; mov  al, [bp+2]
+B4 0F               ; mov  ah, 0x0F
+E8 88 F6            ; call hexbyte
+=1058
+BF 50 07            ; mov  di, row11 col56
+BE C0 90            ; mov  si, rule text
+B4 08               ; mov  ah, 0x08
+E8 5D F6            ; call print
+BF 90 08            ; mov  di, row13 col56
+BE E0 90            ; mov  si, DISPLAY label
+B4 07               ; mov  ah, 0x07
+E8 52 F6            ; call print
+=106E
+E9 6E F5            ; jmp  0x05DF              reuse 8x8 pixel drawing from [bp+24]
+=1071
+
+; ===================== DATA for bit programs =========================
+>1080
+=1080
+42 49 54 53 3A 20 20 20 20 00 00 00 00 00 00 00  ; "BITS:    "
+=1090
+4C 45 4E 47 54 48 3A 20 20 00 00 00 00 00 00 00  ; "LENGTH:  "
+=10A0
+46 4C 49 50 53 3A 20 20 20 00 00 00 00 00 00 00  ; "FLIPS:   "
+=10B0
+48 45 41 44 3A 20 20 20 20 00 00 00 00 00 00 00  ; "HEAD:    "
+=10C0
+42 49 54 20 43 50 55 3A 20 30 3D 46 4C 49 50 20  ; "BIT CPU: 0=FLIP "
+31 3D 4D 4F 56 45 00 00 00 00 00 00 00 00 00 00  ; "1=MOVE"
+=10E0
+44 49 53 50 4C 41 59 20 28 46 49 4E 41 4C 29 3A  ; "DISPLAY (FINAL):"
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+=1100
+45 58 50 4C 4F 52 45 52 3A 20 41 4C 4C 20 32 35  ; "EXPLORER: ALL 25"
+34 20 42 49 54 20 50 52 4F 47 52 41 4D 53 20 28  ; "4 BIT PROGRAMS ("
+31 2D 37 20 42 49 54 53 29 00 00 00 00 00 00 00  ; "1-7 BITS)"
+=1130

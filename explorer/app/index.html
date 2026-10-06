@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Program Explorer</title>
+<style>
+:root {
+  --bg: #0f1115; --panel: #171a21; --line: #262b36; --text: #e6e8ee; --dim: #8b92a3; --accent: #7aa2ff;
+  --c1: rgb(96,96,104); --c2: rgb(214,72,72); --c3: rgb(64,196,222); --c4: rgb(236,210,64); --c5: rgb(92,206,104); --c6: rgb(206,98,222);
+  --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, "Segoe UI", sans-serif; }
+header { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+header h1 { font-size: 17px; margin: 0; font-weight: 650; letter-spacing: .2px; }
+header .stat { color: var(--dim); }
+header .stat b { color: var(--text); font-weight: 600; }
+.search { display: flex; gap: 6px; margin-left: auto; }
+input { background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 6px; padding: 6px 9px; font: 13px var(--mono); width: 170px; }
+button { background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 6px; padding: 6px 10px; cursor: pointer; font: inherit; font-size: 13px; }
+button:hover { border-color: var(--accent); }
+button.cls { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex: none; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 0; min-height: calc(100vh - 60px); }
+.mapcol { padding: 16px 20px; border-right: 1px solid var(--line); min-width: 0; }
+.crumbs { margin-bottom: 10px; color: var(--dim); font-size: 13px; }
+.crumbs a { color: var(--accent); cursor: pointer; text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+.mapwrap { position: relative; width: min(100%, 720px); }
+canvas.map { width: 100%; aspect-ratio: 1; image-rendering: pixelated; display: block; background: #000; border-radius: 6px; cursor: crosshair; }
+.hover { min-height: 42px; margin-top: 10px; font: 13px var(--mono); color: var(--dim); white-space: pre-wrap; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 12px 0 0; font-size: 12.5px; color: var(--dim); }
+.legend span { display: inline-flex; gap: 6px; align-items: center; }
+.bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 6px; width: min(100%, 720px); }
+.side { padding: 16px 20px; overflow: auto; }
+.side h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--dim); margin: 18px 0 8px; font-weight: 600; }
+.side h2:first-child { margin-top: 0; }
+.big { font: 600 22px var(--mono); letter-spacing: 1px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 10px; font-size: 12.5px; font-weight: 600; color: #111; }
+.muted { color: var(--dim); }
+table.dis { border-collapse: collapse; width: 100%; font: 13px var(--mono); }
+table.dis td { padding: 3px 6px; border-bottom: 1px solid var(--line); }
+table.dis tr.cur td { background: #24324f; }
+.mem { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; font: 12px var(--mono); }
+.mem div { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; text-align: center; padding: 3px 0; }
+.mem div small { display: block; color: var(--dim); font-size: 9.5px; }
+.mem div.prog { border-color: #5470b8; }
+.mem div.changed { background: #3a3218; }
+.screens { display: flex; gap: 18px; }
+.screens canvas { width: 136px; height: 136px; image-rendering: pixelated; background: #000; border-radius: 4px; }
+.screens figcaption { font-size: 11.5px; color: var(--dim); margin-top: 4px; }
+figure { margin: 0; }
+.ctrl { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.ctrl input[type=range] { flex: 1; min-width: 120px; padding: 0; }
+.regs { font: 13px var(--mono); display: flex; gap: 18px; flex-wrap: wrap; margin: 8px 0; }
+.outs { font: 12.5px var(--mono); word-break: break-all; }
+.ok { color: #6fdc8c; } .bad { color: #ff6b6b; }
+@media (max-width: 1000px) { main { grid-template-columns: 1fr; } .mapcol { border-right: 0; border-bottom: 1px solid var(--line); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Dimension42 · Program Explorer</h1>
+  <div class="stat" id="stat">loading…</div>
+  <button id="add2btn">2 + 2 = 4 ?</button>
+  <div class="search">
+    <input id="q" placeholder="program hex, e.g. A0 9F 00 D8 F0" spellcheck="false">
+    <button id="go">Open</button>
+  </div>
+</header>
+<main>
+  <section class="mapcol">
+    <div class="crumbs" id="crumbs"></div>
+    <div id="add2" style="display:none"></div>
+    <div class="mapwrap"><canvas class="map" id="map" width="32" height="32"></canvas></div>
+    <div class="bar" id="bar"></div>
+    <div class="hover" id="hover"></div>
+    <div class="legend" id="legend"></div>
+    <div class="legend" id="randoms" style="margin-top:14px"></div>
+  </section>
+  <aside class="side" id="side">
+    <h2>Program</h2>
+    <p class="muted">Click a block, then a program, or search one by its 5 bytes.</p>
+  </aside>
+</main>
+<script>
+const NAMES = ["", "IDLE", "HALT", "ACTIVE", "SELF-MOD", "OUTPUT", "DRAW"];
+const COL = ["#000", "rgb(96,96,104)", "rgb(214,72,72)", "rgb(64,196,222)", "rgb(236,210,64)", "rgb(92,206,104)", "rgb(206,98,222)"];
+const WHY = ["", "nothing changed during all 64 steps", "stopped at a HLT instruction", "changed A or memory M5-M7",
+             "rewrote one of its own 5 bytes", "produced output with OUT", "lit pixels on the 8x8 display (M8-MF)"];
+const OPS = [["NOP", "do nothing"], ["LDI", "A = n"], ["ADDI", "A = A + n"], ["SUBI", "A = A - n"],
+  ["LD", "A = M[n]"], ["ST", "M[n] = A"], ["ADD", "A = A + M[n]"], ["JMP", "PC = n mod 5"],
+  ["JZ", "if A = 0: PC = n mod 5"], ["INC", "M[n] += 1"], ["DEC", "M[n] -= 1"], ["ROL", "rotate A left n"],
+  ["XOR", "A = A ^ M[n]"], ["OUT", "output M[n]"], ["NOT", "M[n] = ~M[n]"], ["HLT", "stop"]];
+const L = 5, CHUNK = 2 ** 30, TOTAL = 2 ** 40;
+const $ = id => document.getElementById(id);
+const hex2 = v => v.toString(16).toUpperCase().padStart(2, "0");
+const bytesOf = p => Array.from({ length: L }, (_, i) => Math.floor(p / 2 ** (8 * (L - 1 - i))) % 256);
+const fmtP = p => bytesOf(p).map(hex2).join(" ");
+const fmt = n => n.toLocaleString("en-US");
+let S = null, view = { level: 0 }, sel = null;
+
+// ---------- NANO CPU (same rules as the cluster run) ----------
+function simulate(p, a = 0, b = 0) {
+  const prog = bytesOf(p), M = new Array(16).fill(0), T = new Array(16).fill(0), outs = [];
+  prog.forEach((v, i) => M[i] = v);
+  M[5] = a; M[6] = b;                                   // inputs (0, 0 = how the 5-byte data was computed)
+  let A = 0, tA = 0, pc = 0, steps = 0, halted = false;
+  const frames = [];
+  for (;;) {
+    for (let i = 0; i < 16; i++) T[i] |= M[i];
+    tA |= A;
+    const f = { M: M.slice(), T: T.slice(), A, pc, steps, outs: outs.slice(), halted: false };
+    frames.push(f);
+    if (steps >= 64) break;
+    steps++;
+    const ins = M[pc], at = pc;
+    f.next = at;
+    pc = (pc + 1) % L;
+    const op = ins >> 4, n = ins & 15;
+    if (op === 15) { halted = true; frames.push({ ...f, steps, halted: true, next: undefined }); break; }
+    const v = M[n];
+    switch (op) {
+      case 1: A = n; break;
+      case 2: A = (A + n) & 255; break;
+      case 3: A = (A - n) & 255; break;
+      case 4: A = v; break;
+      case 5: M[n] = A; break;
+      case 6: A = (A + v) & 255; break;
+      case 7: pc = n % L; break;
+      case 8: if (A === 0) pc = n % L; break;
+      case 9: M[n] = (v + 1) & 255; break;
+      case 10: M[n] = (v - 1) & 255; break;
+      case 11: { const k = n & 7; A = ((A << k) | (A >> (8 - k))) & 255; } break;
+      case 12: A ^= v; break;
+      case 13: outs.push(v); break;
+      case 14: M[n] = (~v) & 255; break;
+    }
+  }
+  const last = frames[frames.length - 1], Tf = last.T, Mf = last.M;
+  let cls = 1;
+  if (Tf.slice(8).some(x => x)) cls = 6;
+  else if (last.outs.length) cls = 5;
+  else if (prog.some((v, i) => Mf[i] !== v)) cls = 4;
+  else if (tA || Tf.slice(L, 8).some(x => x)) cls = 3;
+  else if (halted) cls = 2;
+  return { frames, cls, prog, answer: last.outs.length ? last.outs[0] : null };
+}
+
+// ---------- map views ----------
+const cv = $("map"), ctx = cv.getContext("2d");
+let img = null, blockData = null;
+
+function drawRGB(rgb, w) {
+  cv.width = cv.height = w;
+  const id = ctx.createImageData(w, w);
+  for (let i = 0, j = 0; i < w * w; i++, j += 3) {
+    id.data[i * 4] = rgb[j]; id.data[i * 4 + 1] = rgb[j + 1]; id.data[i * 4 + 2] = rgb[j + 2]; id.data[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(id, 0, 0);
+  img = id;
+}
+
+function bar(counts) {
+  const tot = counts.reduce((a, b) => a + b, 0);
+  $("bar").innerHTML = counts.map((c, i) => `<div title="${NAMES[i + 1]} ${fmt(c)}" style="width:${100 * c / tot}%;background:${COL[i + 1]}"></div>`).join("");
+}
+
+function crumbs() {
+  const parts = [`<a data-l="0">All ${fmt(TOTAL)} programs</a>`];
+  if (view.level >= 1) parts.push(`<a data-l="1">Chunk ${view.k} · ${fmtP(view.k * CHUNK).slice(0, 5)} …</a>`);
+  if (view.level >= 2) parts.push(`<span>Block ${fmtP(view.k * CHUNK + view.b * 1024).slice(0, 11)} xx</span>`);
+  $("crumbs").innerHTML = parts.join(" &rsaquo; ");
+  $("crumbs").querySelectorAll("a").forEach(a => a.onclick = () => {
+    const l = +a.dataset.l;
+    if (l === 0) showOverview(); else showChunk(view.k);
+  });
+}
+
+async function showOverview() {
+  view = { level: 0 };
+  crumbs();
+  drawRGB(new Uint8Array(await (await fetch("/api/overview.rgb")).arrayBuffer()), 32);
+  bar(S.classes_arr);
+  $("hover").textContent = "1024 chunks of 1,073,741,824 programs. Colour = mix of classes. Click a chunk.";
+}
+
+async function showChunk(k) {
+  view = { level: 1, k };
+  crumbs();
+  $("hover").textContent = `Loading chunk ${k} (decompressing 1 GiB, first time takes a few seconds)…`;
+  const rgb = new Uint8Array(await (await fetch(`/api/chunk/${k}.rgb`)).arrayBuffer());
+  if (view.level !== 1 || view.k !== k) return;
+  drawRGB(rgb, 1024);
+  bar(S.counts[k]);
+  $("hover").textContent = `Chunk ${k}: ${fmt(CHUNK)} programs, computed by ${S.node[k]}. Each pixel = 1024 programs. Click to zoom in.`;
+}
+
+async function showBlock(k, b, highlight) {
+  view = { level: 2, k, b };
+  crumbs();
+  blockData = new Uint8Array(await (await fetch(`/api/block/${k}/${b}`)).arrayBuffer());
+  cv.width = cv.height = 32 * 16;
+  for (let i = 0; i < 1024; i++) {
+    ctx.fillStyle = COL[blockData[i]];
+    ctx.fillRect((i % 32) * 16, Math.floor(i / 32) * 16, 15, 15);
+  }
+  if (highlight !== undefined) {
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
+    ctx.strokeRect((highlight % 32) * 16 - 1, Math.floor(highlight / 32) * 16 - 1, 17, 17);
+  }
+  const c = [0, 0, 0, 0, 0, 0];
+  blockData.forEach(v => c[v - 1]++);
+  bar(c);
+  $("hover").textContent = "1024 programs. Each square is one program. Click one to run it.";
+}
+
+function cellAt(e) {
+  const r = cv.getBoundingClientRect();
+  return [Math.floor((e.clientX - r.left) / r.width * cv.width), Math.floor((e.clientY - r.top) / r.height * cv.height)];
+}
+
+cv.onmousemove = e => {
+  const [x, y] = cellAt(e);
+  if (view.level === 0) {
+    const k = y * 32 + x; if (k < 0 || k > 1023) return;
+    const c = S.counts[k];
+    $("hover").textContent = `chunk ${k}: programs ${fmtP(k * CHUNK)} … ${fmtP((k + 1) * CHUNK - 1)}\n` +
+      c.map((v, i) => `${NAMES[i + 1]} ${(100 * v / CHUNK).toFixed(1)}%`).join("  ");
+  } else if (view.level === 1) {
+    const b = y * 1024 + x;
+    $("hover").textContent = `programs ${fmtP(view.k * CHUNK + b * 1024)} … ${fmtP(view.k * CHUNK + b * 1024 + 1023)}`;
+  } else if (blockData) {
+    const i = Math.floor(y / 16) * 32 + Math.floor(x / 16); if (i < 0 || i > 1023) return;
+    const p = view.k * CHUNK + view.b * 1024 + i;
+    $("hover").textContent = `${fmtP(p)}   ${NAMES[blockData[i]]}   ` + bytesOf(p).map(v => OPS[v >> 4][0] + " " + hex2(v & 15).slice(1)).join(" · ");
+  }
+};
+
+cv.onclick = e => {
+  const [x, y] = cellAt(e);
+  if (view.level === 0) showChunk(y * 32 + x);
+  else if (view.level === 1) showBlock(view.k, y * 1024 + x);
+  else { const i = Math.floor(y / 16) * 32 + Math.floor(x / 16); openProgram(view.k * CHUNK + view.b * 1024 + i, false); showBlock(view.k, view.b, i); }
+};
+
+// ---------- program panel ----------
+let run = null, frame = 0, timer = null, inA = 0, inB = 0;
+
+async function openProgram(p, navigate = true, a = 0, b = 0) {
+  clearInterval(timer); timer = null;
+  sel = p; inA = a; inB = b;
+  run = simulate(p, a, b);
+  frame = 0;
+  const info = await (await fetch(`/api/program/${p}`)).json();
+  if (navigate) showBlock(Math.floor(p / CHUNK), Math.floor((p % CHUNK) / 1024), p % 1024);
+  const stored = info.class, live = simulate(p).cls;
+  $("side").innerHTML = `
+    <h2>Program</h2>
+    <div class="big">${fmtP(p)}</div>
+    <div class="muted" style="margin:4px 0 10px">#${fmt(p)} · computed by ${info.computed_by}</div>
+    <span class="badge" style="background:${COL[stored]}">${NAMES[stored]}</span>
+    <span class="muted"> ${WHY[stored]}</span>
+    <div style="margin-top:6px;font-size:12.5px" class="${stored === live ? "ok" : "bad"}">
+      ${stored === live ? "✓ stored result matches a live re-run in this browser" : `✗ live re-run says ${NAMES[live]}`}</div>
+    <h2>Instructions</h2>
+    <table class="dis" id="dis">${run.prog.map((v, i) => `<tr data-i="${i}"><td class="muted">${i}</td><td>${hex2(v)}</td>
+      <td>${OPS[v >> 4][0]} ${v >> 4 === 0 || v >> 4 === 15 ? "" : (v & 15).toString(16).toUpperCase()}</td>
+      <td class="muted">${OPS[v >> 4][1].replace(/\bn\b/g, (v & 15).toString(16).toUpperCase())}</td></tr>`).join("")}</table>
+    <h2>Run</h2>
+    <div class="ctrl" style="margin-bottom:8px">
+      <span class="muted">inputs</span> a = M5 <input id="ia" value="${a}" style="width:52px"> b = M6 <input id="ib" value="${b}" style="width:52px">
+      <button id="irun">Run</button><button id="i22">2 + 2</button>
+      <span id="ans" style="font:600 13px var(--mono)">${run.answer === null ? "answer: none" : `answer: ${run.answer}`}</span>
+    </div>
+    <div class="ctrl">
+      <button id="b0">⏮</button><button id="bp">◀</button><button id="play">▶ Play</button><button id="bn">▶|</button>
+      <input type="range" id="slider" min="0" max="${run.frames.length - 1}" value="0">
+    </div>
+    <div class="regs" id="regs"></div>
+    <div class="screens">
+      <figure><canvas id="scr" width="8" height="8"></canvas><figcaption>display now</figcaption></figure>
+      <figure><canvas id="exp" width="8" height="8"></canvas><figcaption>display, all steps so far</figcaption></figure>
+    </div>
+    <h2>Memory</h2><div class="mem" id="mem"></div>
+    <h2>Output</h2><div class="outs" id="outs"></div>`;
+  const rerun = (x, y) => openProgram(p, false, Math.max(0, Math.min(255, x | 0)), Math.max(0, Math.min(255, y | 0)));
+  $("irun").onclick = () => rerun(+$("ia").value, +$("ib").value);
+  $("i22").onclick = () => rerun(2, 2);
+  $("b0").onclick = () => setFrame(0);
+  $("bp").onclick = () => setFrame(frame - 1);
+  $("bn").onclick = () => setFrame(frame + 1);
+  $("slider").oninput = e => setFrame(+e.target.value);
+  $("play").onclick = () => {
+    if (timer) { clearInterval(timer); timer = null; $("play").textContent = "▶ Play"; return; }
+    if (frame >= run.frames.length - 1) setFrame(0);
+    $("play").textContent = "⏸ Pause";
+    timer = setInterval(() => { if (frame >= run.frames.length - 1) { $("play").click(); return; } setFrame(frame + 1); }, 140);
+  };
+  setFrame(0);
+  $("q").value = fmtP(p);
+}
+
+function drawScreen(id, rows) {
+  const c = $(id).getContext("2d");
+  for (let r = 0; r < 8; r++) for (let b = 0; b < 8; b++) {
+    c.fillStyle = (rows[r] >> (7 - b)) & 1 ? "#7dff9a" : "#14181f";
+    c.fillRect(b, r, 1, 1);
+  }
+}
+
+function setFrame(f) {
+  frame = Math.max(0, Math.min(run.frames.length - 1, f));
+  const F = run.frames[frame], prev = run.frames[Math.max(0, frame - 1)];
+  $("slider").value = frame;
+  $("regs").innerHTML = `<span>step <b>${F.steps}</b>/64</span><span>A = <b>${hex2(F.A)}</b></span>` +
+    `<span>PC = <b>${F.pc}</b></span>${F.halted ? '<span class="bad">HALTED</span>' : F.steps >= 64 ? '<span class="muted">64-step limit</span>' : ""}`;
+  document.querySelectorAll("#dis tr").forEach(tr => tr.classList.toggle("cur", F.next !== undefined && +tr.dataset.i === F.next));
+  $("mem").innerHTML = F.M.map((v, i) => `<div class="${i < L ? "prog" : ""} ${v !== prev.M[i] ? "changed" : ""}"><small>M${i.toString(16).toUpperCase()}</small>${hex2(v)}</div>`).join("");
+  $("outs").textContent = F.outs.length ? F.outs.map(hex2).join(" ") + `   (${F.outs.length})` : "none yet";
+  drawScreen("scr", F.M.slice(8));
+  drawScreen("exp", F.T.slice(8));
+}
+
+// ---------- 2 + 2 = 4 ----------
+function mapVisible(on) {
+  for (const id of ["map", "bar", "hover", "legend", "randoms"]) {
+    const el = id === "map" ? $("map").parentElement : $(id);
+    el.style.display = on ? "" : "none";
+  }
+  $("add2").style.display = on ? "none" : "";
+}
+
+async function showAdd2(offset = 0) {
+  const s = await (await fetch("/api/add2/summary")).json();
+  mapVisible(false);
+  $("crumbs").innerHTML = `<a id="backmap">All ${fmt(TOTAL)} programs</a> &rsaquo; 2 + 2 = 4`;
+  $("backmap").onclick = () => { mapVisible(true); showOverview(); };
+  if (s.error) { $("add2").innerHTML = `<p class="muted">${s.error}</p>`; return; }
+  const list = await (await fetch(`/api/add2/list/5/${offset}`)).json();
+  const row = (L, x) => `<tr><td>${L}</td><td>${fmt(x.programs)}</td><td>${fmt(x.says4)}</td>
+    <td style="color:var(--c5)"><b>${fmt(x.add_proven)}</b></td><td>${fmt(x.add_clean)}</td><td>${fmt(x.const)}</td>
+    <td>${fmt(x.twoa)}</td><td>${fmt(x.twob)}</td><td>${fmt(x.mul)}</td><td>${fmt(x.other)}</td></tr>`;
+  $("add2").innerHTML = `
+    <p class="muted" style="max-width:720px">Inputs: a in M5, b in M6. Answer: the first value printed with OUT.
+      Every program of 1–5 bytes was run with a = 2, b = 2. Those answering 4 were tested on 32 more pairs, and every
+      candidate adder was then <b>proven on all 65,536 pairs</b> (a, b = 0…255, answer (a+b) mod 256).</p>
+    <table class="dis" style="max-width:860px">
+      <tr class="muted"><td>bytes</td><td>programs</td><td>answer 4</td><td>real adders</td><td>clean*</td>
+        <td>always 4</td><td>2·a</td><td>2·b</td><td>a·b</td><td>coincidence</td></tr>
+      ${[1, 2, 3, 4, 5].map(L => row(L, s.per_length[L])).join("")}
+    </table>
+    <p class="muted" style="font-size:12.5px">* clean = prints exactly one answer, then stops with HLT.</p>
+    <h2 style="font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;margin-top:20px">
+      Proven 5-byte adders · ${fmt(list.offset + 1)}–${fmt(Math.min(list.total, list.offset + 100))} of ${fmt(list.total)}
+      <button id="prev" ${offset ? "" : "disabled"}>◀</button> <button id="next" ${offset + 100 < list.total ? "" : "disabled"}>▶</button></h2>
+    <table class="dis" style="max-width:860px" id="addlist">
+      ${list.rows.map(r => `<tr data-p="${r.program}" style="cursor:pointer"><td><b>${fmtP(r.program)}</b></td>
+        <td>${bytesOf(r.program).map(v => OPS[v >> 4][0] + (v >> 4 === 0 || v >> 4 === 15 ? "" : " " + (v & 15).toString(16).toUpperCase())).join(" · ")}</td>
+        <td class="muted">${r.outputs === 1 && r.halts ? "clean" : r.outputs + " outputs"}${r.halts ? ", halts" : ""}, ${r.steps} steps</td></tr>`).join("")}
+    </table>`;
+  $("prev").onclick = () => showAdd2(Math.max(0, offset - 100));
+  $("next").onclick = () => showAdd2(offset + 100);
+  $("addlist").querySelectorAll("tr").forEach(tr => tr.onclick = () => openProgram(+tr.dataset.p, false, 2, 2));
+}
+
+// ---------- start ----------
+async function start() {
+  S = await (await fetch("/api/summary")).json();
+  S.classes_arr = NAMES.slice(1).map(n => S.classes[n]);
+  const v = S.verification || {};
+  $("stat").innerHTML = `<b>${fmt(S.programs)}</b> programs · all 5-byte NANO programs · computed in <b>${S.wall_seconds.toFixed(0)} s</b> on 9 GPUs` +
+    (v.file_mismatches === 0 ? ` · <span class="ok">verified</span>` : "");
+  $("legend").innerHTML = NAMES.slice(1).map((n, i) => `<span><i class="dot" style="background:${COL[i + 1]}"></i>${n} ${(100 * S.classes_arr[i] / S.programs).toFixed(1)}%</span>`).join("");
+  $("randoms").innerHTML = '<span class="muted">Random program:</span>' + NAMES.slice(1).map((n, i) =>
+    `<button class="cls" data-c="${i + 1}"><i class="dot" style="background:${COL[i + 1]}"></i>${n}</button>`).join("");
+  $("randoms").querySelectorAll("button").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    const r = await (await fetch(`/api/random/${b.dataset.c}`)).json();
+    b.disabled = false;
+    openProgram(r.program);
+  });
+  const go = () => {
+    const t = $("q").value.replace(/[\s:_-]/g, "");
+    const p = /^[0-9a-fA-F]{1,10}$/.test(t) ? parseInt(t, 16) : NaN;
+    if (p >= 0 && p < TOTAL) openProgram(p); else $("q").style.borderColor = "#ff6b6b";
+  };
+  $("go").onclick = go;
+  $("add2btn").onclick = () => showAdd2(0);
+  $("q").onkeydown = e => { $("q").style.borderColor = ""; if (e.key === "Enter") go(); };
+  showOverview();
+}
+start();
+</script>
+</body>
+</html>

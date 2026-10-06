@@ -1,0 +1,214 @@
+{
+ "A_no_practice": {
+  "a=M5 b=M6 c=M8": {
+   "written": 2000,
+   "step1_2+2+2=6": 367,
+   "step2_32_triples": 336,
+   "step3_all_16.7M_triples": 336,
+   "different_proven": 114,
+   "proven_not_in_training": 0,
+   "proven_but_not_in_exhaustive_list": 0,
+   "all_adders_for_layout": 626,
+   "random_guessing_rate": 5.693436833098531e-10,
+   "most_common_answers_for_2+2+2": {
+    "4": 741,
+    "6": 367,
+    "2": 299,
+    "0": 250,
+    "None": 164
+   },
+   "examples": [
+    "66656859D9",
+    "C865665DDD",
+    "4665685DDD",
+    "6568665DDD",
+    "4568665DDD",
+    "6865665FDF"
+   ]
+  },
+  "a=M5 b=M7 c=M9": {
+   "written": 2000,
+   "step1_2+2+2=6": 83,
+   "step2_32_triples": 66,
+   "step3_all_16.7M_triples": 66,
+   "different_proven": 44,
+   "proven_not_in_training": 0,
+   "proven_but_not_in_exhaustive_list": 0,
+   "all_adders_for_layout": 440,
+   "random_guessing_rate": 4.001776687800884e-10,
+   "most_common_answers_for_2+2+2": {
+    "4": 1251,
+    "2": 297,
+    "None": 127,
+    "0": 110,
+    "6": 83
+   },
+   "examples": [
+    "C9656759D9",
+    "45676955D5",
+    "C5696755D5",
+    "C5676950D0",
+    "49656750D0",
+    "67656950D0"
+   ]
+  },
+  "a=M6 b=M7 c=M8": {
+   "written": 2000,
+   "step1_2+2+2=6": 65,
+   "step2_32_triples": 53,
+   "step3_all_16.7M_triples": 53,
+   "different_proven": 52,
+   "proven_not_in_training": 0,
+   "proven_but_not_in_exhaustive_list": 0,
+   "all_adders_for_layout": 1703,
+   "random_guessing_rate": 1.5488694771192968e-09,
+   "most_common_answers_for_2+2+2": {
+    "4": 1368,
+    "2": 170,
+    "None": 169,
+    "0": 96,
+    "6": 65
+   },
+   "examples": [
+    "68A05CE206",
+    "68A0A3E38F",
+    "68A05B04E2",
+    "68A0A8A4E3",
+    "7853D39464",
+    "68A05BC5E2"
+   ]
+  },
+  "a=M6 b=M8 c=M9": {
+   "written": 2000,
+   "step1_2+2+2=6": 61,
+   "step2_32_triples": 45,
+   "step3_all_16.7M_triples": 45,
+   "different_proven": 40,
+   "proven_not_in_training": 0,
+   "proven_but_not_in_exhaustive_list": 0,
+   "all_adders_for_layout": 847,
+   "random_guessing_rate": 7.703420124016702e-10,
+   "most_common_answers_for_2+2+2": {
+    "4": 1299,
+    "0": 233,
+    "None": 167,
+    "2": 121,
+    "6": 61
+   },
+   "examples": [
+    "69666850D0",
+    "6966685ADA",
+    "69666851D1",
+    "C9666851D1",
+    "6966685CDC",
+    "C966685CDC"
+   ]
+  }
+ },
+ "B_few_examples": {
+  "a=M5 b=M6 c=M8": {
+   "written": 2000,
+   "step1_2+2+2=6": 1773,
+   "step2_32_triples": 1735,
+   "step3_all_16.7M_triples": 1735,
+   "different_proven": 443,
+   "proven_not_in_training": 0,
+   "proven_but_not_in_exhaustive_list": 0,
+   "all_adders_for_layout": 626,
+   "random_guessing_rate": 5.693436833098531e-10,
+   "most_common_answers_for_2+2+2": {
+    "6": 1773,
+    "4": 171,
+    "10": 11,
+    "None": 10,
+    "8": 7
+   },
+   "examples": [
+    "7350D09365",
+    "7D50D09365",
+    "68A0A3E36A",
+    "655F90A4E4",
+    "6665685DDD",
+    "7851D19365"
+   ]
+  },
+  "a=M5 b=M7 c=M9": {
+   "written": 2000,
+   "step1_2+2+2=6": 1865,
+   "step2_32_triples": 1863,
+   "step3_all_16.7M_triples": 1863,
+   "different_proven": 411,
+   "proven_not_in_training": 0,
+   "proven_but_not_in_exhaustive_list": 0,
+   "all_adders_for_layout": 440,
+   "random_guessing_rate": 4.001776687800884e-10,
+   "most_common_answers_for_2+2+2": {
+    "6": 1865,
+    "4": 85,
+    "8": 12,
+    "None": 9,
+    "2": 7
+   },
+   "examples": [
+    "7850D09365",
+    "7D50D09365",
+    "6967655DDD",
+    "4567695DDD",
+    "4765695DDD",
+    "6569675DDD"
+   ]
+  },
+  "a=M6 b=M7 c=M8": {
+   "written": 2000,
+   "step1_2+2+2=6": 1723,
+   "step2_32_triples": 1715,
+   "step3_all_16.7M_triples": 1715,
+   "different_proven": 656,
+   "proven_not_in_training": 0,
+   "proven_but_not_in_exhaustive_list": 0,
+   "all_adders_for_layout": 1703,
+   "random_guessing_rate": 1.5488694771192968e-09,
+   "most_common_answers_for_2+2+2": {
+    "6": 1723,
+    "4": 170,
+    "None": 18,
+    "8": 13,
+    "10": 12
+   },
+   "examples": [
+    "7850D09365",
+    "6AA0A393E3",
+    "7D50D09365",
+    "69A0A3E365",
+    "735FDF9464",
+    "7D5FDF9464"
+   ]
+  },
+  "a=M6 b=M8 c=M9": {
+   "written": 2000,
+   "step1_2+2+2=6": 1784,
+   "step2_32_triples": 1781,
+   "step3_all_16.7M_triples": 1781,
+   "different_proven": 576,
+   "proven_not_in_training": 0,
+   "proven_but_not_in_exhaustive_list": 0,
+   "all_adders_for_layout": 847,
+   "random_guessing_rate": 7.703420124016702e-10,
+   "most_common_answers_for_2+2+2": {
+    "6": 1784,
+    "4": 152,
+    "None": 14,
+    "14": 12,
+    "10": 9
+   },
+   "examples": [
+    "7850D09365",
+    "69A0A393E3",
+    "7D50D09365",
+    "69A0A3E365",
+    "7D5FDF9464",
+    "95A3A0E366"
+   ]
+  }
+ }
+}

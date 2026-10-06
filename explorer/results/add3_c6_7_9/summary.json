@@ -1,0 +1,58 @@
+{
+ "cells": [
+  6,
+  7,
+  9
+ ],
+ "seconds": {
+  "search": 44.172224799986,
+  "verify": 2.388480200082995
+ },
+ "per_length": {
+  "1": {
+   "says": 0,
+   "add": 0,
+   "const": 0,
+   "other": 0,
+   "overflow": 0,
+   "add_proven": 0,
+   "add_failed_full_test": 0
+  },
+  "2": {
+   "says": 2,
+   "add": 0,
+   "const": 2,
+   "other": 0,
+   "overflow": 0,
+   "add_proven": 0,
+   "add_failed_full_test": 0
+  },
+  "3": {
+   "says": 1482,
+   "add": 0,
+   "const": 1480,
+   "other": 2,
+   "overflow": 0,
+   "add_proven": 0,
+   "add_failed_full_test": 0
+  },
+  "4": {
+   "says": 702974,
+   "add": 1,
+   "const": 701215,
+   "other": 1758,
+   "overflow": 0,
+   "add_proven": 1,
+   "add_failed_full_test": 0
+  },
+  "5": {
+   "says": 275597056,
+   "add": 849,
+   "const": 273710366,
+   "other": 1885841,
+   "overflow": 0,
+   "add_proven": 849,
+   "add_failed_full_test": 0
+  }
+ }
+}

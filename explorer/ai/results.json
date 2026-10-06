@@ -1,0 +1,153 @@
+{
+ "train_layouts": [
+  [
+   5,
+   6
+  ],
+  [
+   5,
+   7
+  ],
+  [
+   5,
+   8
+  ],
+  [
+   5,
+   9
+  ],
+  [
+   6,
+   7
+  ],
+  [
+   6,
+   9
+  ],
+  [
+   7,
+   8
+  ],
+  [
+   8,
+   9
+  ]
+ ],
+ "samples_per_layout": 2000,
+ "tests": {
+  "trained layouts (sanity): a=M5 b=M6": {
+   "valid_rate": 0.961,
+   "unique_valid": 1894,
+   "all_adders_for_layout": 74527,
+   "coverage": 0.0254136084908825,
+   "valid_not_in_training": 0,
+   "valid_but_missing_from_exhaustive_list": 0,
+   "random_guess_rate": 6.778191163903102e-08,
+   "examples": [
+    "6665ED53D3",
+    "656656E1D6",
+    "6566055DDD",
+    "6AC6655DDD",
+    "5FC6655DDD",
+    "6696655DDD",
+    "4946655DDD",
+    "46CB655DDD"
+   ]
+  },
+  "trained layouts (sanity): a=M5 b=M7": {
+   "valid_rate": 0.979,
+   "unique_valid": 1933,
+   "all_adders_for_layout": 73163,
+   "coverage": 0.026420458428440607,
+   "valid_not_in_training": 0,
+   "valid_but_missing_from_exhaustive_list": 0,
+   "random_guess_rate": 6.654136086581275e-08,
+   "examples": [
+    "C567CF59D9",
+    "65675E9BDE",
+    "C5675D5DDD",
+    "BA47655DDD",
+    "A6C7655DDD",
+    "ADC7655DDD",
+    "B347655DDD",
+    "B2C7655DDD"
+   ]
+  },
+  "new combination: a=M6 b=M8": {
+   "valid_rate": 0.911,
+   "unique_valid": 1774,
+   "all_adders_for_layout": 73799,
+   "coverage": 0.024038266101166682,
+   "valid_not_in_training": 1665,
+   "valid_but_missing_from_exhaustive_list": 0,
+   "random_guess_rate": 6.711979949614033e-08,
+   "examples": [
+    "460A6857D7",
+    "4601685FDF",
+    "466B6858D8",
+    "C668581FD8",
+    "46C56851D1",
+    "4668E15DDD",
+    "C668915DDD",
+    "48668D5DDD"
+   ]
+  },
+  "new combination: a=M7 b=M9": {
+   "valid_rate": 0.8705,
+   "unique_valid": 1716,
+   "all_adders_for_layout": 74841,
+   "coverage": 0.022928608650338717,
+   "valid_not_in_training": 1611,
+   "valid_but_missing_from_exhaustive_list": 0,
+   "random_guess_rate": 6.806749297538772e-08,
+   "examples": [
+    "4769E55DDD",
+    "95C7695DDD",
+    "C765695DDD",
+    "C79E695DDD",
+    "C567695DDD",
+    "0CC7695DDD",
+    "EB47695DDD",
+    "6847695DDD"
+   ]
+  },
+  "unknown cell M10: a=M5 b=M10": {
+   "valid_rate": 0.04,
+   "unique_valid": 66,
+   "all_adders_for_layout": 72090,
+   "coverage": 0.0009155222638368705,
+   "valid_not_in_training": 13,
+   "valid_but_missing_from_exhaustive_list": 0,
+   "random_guess_rate": 6.55654730508104e-08,
+   "examples": [
+    "656A6959D9",
+    "CA656959D9",
+    "C56A6955D5",
+    "C5696A58D8",
+    "656A6950D0",
+    "C56A6E50D0",
+    "65696A5ADA",
+    "656A665ADA"
+   ]
+  },
+  "unknown cell M10: a=M9 b=M10": {
+   "valid_rate": 0.0655,
+   "unique_valid": 122,
+   "all_adders_for_layout": 79374,
+   "coverage": 0.0015370272381384333,
+   "valid_not_in_training": 58,
+   "valid_but_missing_from_exhaustive_list": 0,
+   "random_guess_rate": 7.21902324585244e-08,
+   "examples": [
+    "C96A6C59D9",
+    "49666A59D9",
+    "49EF6A59D9",
+    "C96A6659D9",
+    "C96A6D59D9",
+    "69686A59D9",
+    "496A6E5BDB",
+    "496A665BDB"
+   ]
+  }
+ }
+}

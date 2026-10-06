@@ -1,0 +1,7 @@
+* -text
+*.zst -diff -merge -delta
+*.bin -diff -merge -delta
+*.rgb -diff -merge -delta
+*.pt -diff -merge -delta
+*.img -diff -merge -delta
+*.png -diff -merge -delta

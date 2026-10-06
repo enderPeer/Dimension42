@@ -1,0 +1,5 @@
+# program outputs_at_2+2+2 halts steps   (proven on all 16,777,216 triples)
+68A05CE2 13 0 64
+68A0A3E3 12 0 64
+69A0A3E3 12 0 64
+A35EE169 10 0 64

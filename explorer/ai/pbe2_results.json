@@ -1,0 +1,554 @@
+{
+ "catalog_behaviors": 219846,
+ "trained_behaviors": 219836,
+ "test_programs_in_space": {
+  "a + b": 74998,
+  "a XOR b": 77841,
+  "2a + b": 496,
+  "a + b + 1": 933,
+  "3b": 8426,
+  "a + 5": 142060,
+  "NOT b": 118899631,
+  "a - 1": 108110261,
+  "rotate a left 3": 75315,
+  "a XOR b XOR 7": 136
+ },
+ "history": [
+  {
+   "minutes": 0.0,
+   "step": 1,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "NOT b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a - 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    }
+   }
+  },
+  {
+   "minutes": 15.0,
+   "step": 11600,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "NOT b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a - 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    }
+   }
+  },
+  {
+   "minutes": 30.0,
+   "step": 23227,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "NOT b": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "E7A19929AD"
+     ]
+    },
+    "a - 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    }
+   }
+  },
+  {
+   "minutes": 45.0,
+   "step": 34842,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "NOT b": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 2,
+     "examples": [
+      "87D69368E6",
+      "EC2097C6A0"
+     ]
+    },
+    "a - 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    }
+   }
+  },
+  {
+   "minutes": 60.0,
+   "step": 46454,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "01C66558D8"
+     ]
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "NOT b": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "EDC5A02966"
+     ]
+    },
+    "a - 1": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "65E3E5D595"
+     ]
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    }
+   }
+  },
+  {
+   "minutes": 75.0,
+   "step": 58066,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "NOT b": {
+     "prompts_solved": "2/5",
+     "distinct_proven_programs": 2,
+     "examples": [
+      "31E6C686D6",
+      "A1EF299AAC"
+     ]
+    },
+    "a - 1": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "A488D545A6"
+     ]
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    }
+   }
+  },
+  {
+   "minutes": 90.0,
+   "step": 69671,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "NOT b": {
+     "prompts_solved": "3/5",
+     "distinct_proven_programs": 3,
+     "examples": [
+      "87D694E645",
+      "C6E689A1D6",
+      "ECA029ACC5"
+     ]
+    },
+    "a - 1": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "03C6A589D5"
+     ]
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    }
+   }
+  },
+  {
+   "minutes": 105.0,
+   "step": 81277,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "NOT b": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "87D694E645"
+     ]
+    },
+    "a - 1": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "87D5A592C6"
+     ]
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    }
+   }
+  },
+  {
+   "minutes": 120.0,
+   "step": 92880,
+   "tests": {
+    "a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "2a + b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + b + 1": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "3b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a + 5": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "00C5E3DA5A"
+     ]
+    },
+    "NOT b": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a - 1": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "012AE165A5"
+     ]
+    },
+    "rotate a left 3": {
+     "prompts_solved": "0/5",
+     "distinct_proven_programs": 0,
+     "examples": []
+    },
+    "a XOR b XOR 7": {
+     "prompts_solved": "1/5",
+     "distinct_proven_programs": 1,
+     "examples": [
+      "17C5915071"
+     ]
+    }
+   }
+  }
+ ]
+}

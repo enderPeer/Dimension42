@@ -1,0 +1,67 @@
+; =====================================================================
+;  DIMENSION42 OS  -  BOOT SECTOR  (sector 0, loaded by BIOS at 0x7C00)
+; =====================================================================
+;  Pure x86 machine code. Every byte below is executed exactly as written.
+;  Text after ';' is a comment showing what the bytes mean.
+;
+;  Format:  hex bytes   ; comment
+;           =XXXX       ; assert: we are now at offset XXXX (build checks it)
+;           >XXXX       ; pad with 00 bytes up to offset XXXX
+;
+;  Job: set up segments, load the kernel (32 sectors from LBA 1) to
+;  0000:8000 and jump there.
+; =====================================================================
+
+=0000
+FA                  ; cli
+31 C0               ; xor  ax, ax
+8E D8               ; mov  ds, ax
+8E C0               ; mov  es, ax
+8E D0               ; mov  ss, ax
+BC 00 7C            ; mov  sp, 0x7C00          stack grows down below us
+EA 11 7C 00 00      ; jmp  0000:7C11           normalise CS to 0
+=0011
+FB                  ; sti
+88 16 00 05         ; mov  [0x0500], dl        save BIOS boot drive
+B8 03 00            ; mov  ax, 0x0003
+CD 10               ; int  0x10                80x25 colour text mode, clear screen
+
+; ---- load kernel with BIOS extended read (LBA) ----
+BE 41 7C            ; mov  si, 0x7C41          -> disk address packet
+B4 42               ; mov  ah, 0x42
+8A 16 00 05         ; mov  dl, [0x0500]
+CD 13               ; int  0x13
+72 05               ; jc   disk_error (+5)
+EA 00 80 00 00      ; jmp  0000:8000           ==> enter kernel
+
+; ---- disk_error: print message and halt ----
+=002D
+31 DB               ; xor  bx, bx              video page 0
+BE 51 7C            ; mov  si, 0x7C51          -> "D42: DISK ERROR"
+=0032
+AC                  ; lodsb
+84 C0               ; test al, al
+74 06               ; jz   halt (+6)
+B4 0E               ; mov  ah, 0x0E            BIOS teletype
+CD 10               ; int  0x10
+EB F5               ; jmp  0x32 (-11)
+=003D
+FA                  ; cli
+F4                  ; hlt
+EB FC               ; jmp  0x3D (-4)
+
+; ---- disk address packet (16 bytes) ----
+=0041
+10 00               ; packet size 16, reserved 0
+20 00               ; 32 sectors (16 KiB)
+00 80 00 00         ; destination 0000:8000
+01 00 00 00 00 00 00 00 ; start at LBA 1
+
+; ---- message ----
+=0051
+44 34 32 3A 20 44 49 53 4B 20 45 52 52 4F 52 00  ; "D42: DISK ERROR"
+
+; ---- boot signature ----
+>01FE
+55 AA               ; BIOS checks for these two bytes
+=0200

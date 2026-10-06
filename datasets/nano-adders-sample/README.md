@@ -7,6 +7,11 @@ tags:
 - execution-traces
 - nano
 - self-modifying-code
+configs:
+- config_name: default
+  data_files:
+  - split: train
+    path: traces.jsonl
 ---
 
 # Dimension42 NANO execution trace sample
@@ -50,6 +55,5 @@ the fifth is `17C5915071`. Sample pairs use seed 42 plus fixed edge cases.
 Verification applies to the specified finite domain and reference implementation, not arbitrary runtimes.
 No personal data or cluster credentials are included.
 
-This folder is ready for a Hugging Face dataset repository but has **not been uploaded there**.
-The repository owner must choose an explicit redistribution license before a licensed dataset release;
-this card intentionally does not assign a license on the owner's behalf.
+Hugging Face repository: [Egoplayer/Dimension42-nano-traces](https://huggingface.co/datasets/Egoplayer/Dimension42-nano-traces).
+No explicit redistribution license has been selected. This card does not assign a license on the owner's behalf.

@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.spv
+/explorer/nano_cpu
+/explorer/nano_search3
+/explorer/nano_search3_cpu
+/explorer/nano_search3_vk
+/explorer/ai/data/
+/explorer/ai/results_three_local.json
+/explorer/ai/results_three_smoke.json

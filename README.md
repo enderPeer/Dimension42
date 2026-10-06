@@ -1,115 +1,192 @@
-# Dimension42 OS
+# Dimension42
 
-An operating system for the cluster **SPECHT · ADLER · KNECHT · FALKE**, written directly in
-x86 machine code. There is no assembler or compiler. Every byte of the OS is written by hand
-in `src/*.hex`.
+**Every one of 1.1 trillion five-byte programs, explored on a tiny virtual CPU.**
 
-![four nodes](docs/v0.2-cluster.png)
+Dimension42 combines a handwritten x86 OS, exhaustive NANO program search, and neural program generation.
+What can five bytes compute, and can a small model learn to write those programs?
 
-## Run it
+**1,099,511,627,776 programs mapped · 84,933 singleton behavior signatures · approximately 86–93% neural transfer on unseen three-input cell layouts.**
 
-```bash
+Those numbers measure different experiments. Singleton signatures use 16 input probes; **83,802 of their programs self-modify** on at least one probe. The transfer experiment holds out layouts, not all program identities.
+
+[Try the CPU demo](#quickstart-no-gpu) · [Explore the byte tricks](#five-bytes-that-rewrite-themselves) · [Reproduce the neural experiment](#reproduce-the-three-input-neural-experiment) · [Results](explorer/README.md)
+
+![Dimension42 OS on four emulated cluster nodes](docs/v0.2-cluster.png)
+
+## Results at a glance
+
+| Experiment | Result | Evidence and scope |
+|---|---|---|
+| Five-byte map | **All 2^40 programs**, 1,024 compressed chunks; recorded time **159.65 s** | [Manifest](explorer/results/L5/manifest.json). At most 64 instructions from the standard zero-initialized state; six broad classes. |
+| Input/output catalog | **219,846 signatures**, including **84,933 with exactly one program** | [Catalog](explorer/results/catalog/catalog.txt). Hashes of first outputs on 16 fixed input pairs; programs must answer every probe with nonconstant outputs. |
+| Self-modifying singletons | **83,802 / 84,933 = 98.67%** | A changed code byte before the first output on at least one catalog probe. Not every singleton self-modifies. |
+| Three-input neural transfer | **85.75–93.15%**, approximately **86–93%** | [Saved results](explorer/ai/results_three.json): 2,000 candidates per layout; successful programs checked on all **16,777,216** byte triples. |
+
+The map verification recounted all 1,024 files and recomputed 16 chunks on the other GPU family. Publication also checked every compressed five-byte chunk against its saved SHA-256. These checks establish agreement, not a formal proof of the simulator.
+
+Recount the catalog and singleton self-modification figures with `python tools/audit_catalog.py` (CPU only).
+
+### What the neural result means
+
+| Held-out layout | Correct generated programs | Success rate |
+|---|---:|---:|
+| M5, M6, M8 | 1,735 / 2,000 | 86.75% |
+| M5, M7, M9 | 1,863 / 2,000 | 93.15% |
+| M6, M7, M8 | 1,715 / 2,000 | 85.75% |
+| M6, M8, M9 | 1,781 / 2,000 | 89.05% |
+
+Experiment B trains on two-input adders plus three-input adders for six layouts, then tests four different three-input layouts. **All successful program identities were already in training under other tasks.** This measures transfer to unseen layout prompts, not invention of unseen programs. Rates include repeated sampled candidates and come from one recorded run, not an average across seeds.
+
+### Programming by Example is a separate experiment
+
+[`pbe.py`](explorer/ai/pbe.py) samples random programs and executes them live to make examples. [`pbe2.py`](explorer/ai/pbe2.py) and [`pbe3.py`](explorer/ai/pbe3.py) instead sample catalog signatures uniformly, then execute representatives on eight fresh input pairs per training item. The model predicts five bytes from examples using supervised cross-entropy training. Ten target-function probe signatures are withheld; candidate solutions are checked on all 65,536 pairs.
+
+**The 86–93% figure does not describe PBE generalization.** The published two-hour PBE run has much weaker results; see its [evaluation history](explorer/ai/pbe2_results.json). Matching 16 probes or reducing token loss does not establish full functional correctness.
+
+## Five bytes that rewrite themselves
+
+NANO has 16 bytes of shared code/data memory and an 8-bit accumulator A. Each instruction has an operation nibble and an argument nibble. Arithmetic wraps modulo 256; instruction fetch and jumps wrap at program length. These examples start with A = 0, inputs in the named cells, and other non-code memory zero. The answer is the **first OUT within 64 steps**.
+
+### `17 C5 91 50 71`: a XOR b XOR 7
+
+Inputs: a in M5, b in M6.
+
+| Byte | Instruction | Role |
+|---|---|---|
+| `17` | LDI 7 | Start A at 7. |
+| `C5` | XOR M5 | XOR in a; this instruction changes on later passes. |
+| `91` | INC M1 | Change `C5→C6→C7→…→CF→D0`. |
+| `50` | ST M0 | Store the result over the initial LDI instruction. |
+| `71` | JMP 1 | Loop without executing overwritten M0. |
+
+The second pass XORs in b. Reads of M7–MF then XOR zero, preserving the result. Incrementing `CF` produces `D0`: **the XOR becomes OUT M0**. At step 46 it emits `a XOR b XOR 7`. The CPU demo verifies all 65,536 input pairs with the Python reference.
+
+### `67 A0 5C E2`: a three-input adder in four bytes
+
+Inputs: a in M5, b in M6, c in M7. Initial instructions: ADD M7, DEC M0, ST MC, NOT M2.
+
+| Pass | What changes |
+|---|---|
+| 1 | Add c. M0 changes `67→66` (ADD M6). NOT M2 changes `5C→A3` (DEC M3). |
+| 2 | Add b. M0 becomes `65` (ADD M5). M3 changes `E2→E1`; executing E1 changes M1 `A0→5F` (ST MF). |
+| 3 | Add a; save the sum in MF. M3 becomes E0, which changes M0 `65→9A` (INC MA). |
+| 4 | Increment an unrelated cell; save the unchanged sum. M3 becomes DF (OUT MF), emitting the sum at step 16. |
+
+Output: `(a + b + c) mod 256`. See the [exhaustively checked four-byte adder results](explorer/results/add3_c5_6_7/adders_L4.txt).
+
+## Quickstart: no GPU
+
+Requires Git and Python 3.10+. The full repository contains about 3.6 GB of published data. This partial clone retrieves source and small results first, excluding the large map:
+
+~~~bash
+git clone --filter=blob:none --no-checkout https://github.com/enderPeer/Dimension42.git
+cd Dimension42
+git sparse-checkout init --no-cone
+git sparse-checkout set '/*' '!/explorer/results/L5/' '!/explorer/results/classes_L3.bin'
+git checkout main
+python explorer/demo.py --verify-xor
+~~~
+
+The demo prints both instruction traces and verifies the XOR example on all 65,536 pairs. It does not contact the cluster or start training. Download the complete map later with `git sparse-checkout disable`.
+
+### CPU tools: Ubuntu/Debian Linux
+
+~~~bash
+sudo apt-get update
+sudo apt-get install -y build-essential python3-venv
+gcc -O3 -march=native -fopenmp explorer/nano_cpu.c -o explorer/nano_cpu
+gcc -O3 -march=native -fopenmp explorer/nano_search3_cpu.c -o explorer/nano_search3_cpu
+
+# All two-byte programs, two CPU threads, summary only.
+./explorer/nano_cpu 2 0 65536 2 --nooutput
+
+# Small three-input search: probe filtering, not full verification.
+./explorer/nano_search3_cpu 3 0 65536 2 5 6 7
+~~~
+
+## Reproduce the three-input neural experiment
+
+Requires **Linux, an NVIDIA GPU and compatible driver, the CUDA toolkit (`nvcc`), and CUDA-enabled PyTorch**. One GPU is sufficient. This trains two models from scratch; it does not load the two-input `adder_ai.pt` checkpoint. The compiler toolkit is separate from the CUDA runtime bundled with PyTorch.
+
+From the repository root:
+
+~~~bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install torch
+python -c "import torch; print(torch.__version__); assert torch.cuda.is_available(), 'CUDA-enabled PyTorch and an NVIDIA driver are required'"
+
+nvcc -O3 -arch=native explorer/nano_search3.cu -o explorer/nano_search3
+
+# Prepare published results; no new exhaustive search is needed.
+python explorer/ai/prepare_data.py
+python explorer/ai/test_three.py --check-only
+
+# Check the four-byte adder on all 16,777,216 triples.
+printf '4 67a05ce2 5 6 7\n' | ./explorer/nano_search3 verify 0
+
+# Four epochs; 2,000 candidates per held-out layout.
+python explorer/ai/test_three.py --gpu 0
+~~~
+
+For a CPU-only PyTorch installation, use the CUDA command from the [official installer selector](https://pytorch.org/get-started/locally/). If the toolkit predates `-arch=native`, specify a supported GPU architecture instead.
+
+Results go to `explorer/ai/results_three_local.json`, preserving the published report. `--verifier-gpu 1` optionally uses a second GPU. A smaller plumbing check is:
+
+~~~bash
+python explorer/ai/test_three.py --gpu 0 --epochs 1 --samples 10 --output explorer/ai/results_three_smoke.json
+~~~
+
+This still trains on the dataset and is not equivalent to the published run. Sampling, software, and hardware can change reproduced rates.
+
+### Vulkan search: AMD or NVIDIA
+
+`nano_search3.comp` is **GLSL compute-shader source**, not C/CUDA. Compile it with `glslc`:
+
+~~~bash
+sudo apt-get install -y glslc libvulkan-dev
+cd explorer
+glslc --target-env=vulkan1.2 nano_search3.comp -o nano_search3.spv
+gcc -O3 -march=native nano_search3_vk.c -o nano_search3_vk -lvulkan
+printf '3 0 65536 5 6 7\n' | ./nano_search3_vk serve 0
+cd ..
+~~~
+
+The device/driver must support shader 64-bit integers. Run from `explorer/` so the tool can locate its SPIR-V file. This performs search/probe filtering. The current neural experiment's full verifier is CUDA-based: compiling the Vulkan tool does not make `test_three.py` run on an AMD-only machine.
+
+## Browse the complete map
+
+With the full dataset checked out:
+
+~~~bash
+python -m pip install numpy zstandard
+python explorer/app/server.py
+~~~
+
+Open <http://127.0.0.1:8742>. The viewer caches up to two decompressed 1-GiB chunks; allow several GiB of spare RAM. This is separate from the OS's one-byte/bit-program viewer.
+
+## The handwritten OS
+
+OS machine-code bytes live in `src/*.hex`. The explorers and AI tools are host-side C/CUDA/GLSL/Python programs, not handwritten machine code.
+
+~~~bash
+python tools/build.py
+~~~
+
+On Windows with QEMU at the path in the launch script:
+
+~~~powershell
 powershell -ExecutionPolicy Bypass -File run-cluster.ps1
-```
+~~~
 
-This builds the image and opens 4 QEMU windows (one per PC) connected by a virtual ethernet hub.
-Click a window and use the **arrow keys** to explore programs.
+See [OS instructions, opcodes, and hardware limitations](docs/OS.md). Real cluster machines stay on their existing operating systems; hardware boot support is unfinished.
 
-Build only: `python tools/build.py` → `build/dimension42.img` (bootable 1 MiB disk image).
+## Research notes and data
 
-## What it does (v0.3)
+- [Experiments and verification history](explorer/README.md)
+- [Publication snapshot and checksums](docs/snapshots/2026-10-06-publication.json)
+- [Small verified trace dataset](datasets/nano-adders-sample/README.md)
+- [Community sharing material](docs/community/README.md)
 
-1. **Cluster**: every PC boots the same image, reads its MAC address to find out which node
-   it is (last MAC byte 1-4 = SPECHT, ADLER, KNECHT, FALKE) and broadcasts a heartbeat every second.
-   A node shows as ONLINE if it was heard within the last 3 seconds.
-2. **Program explorer**: runs *every* possible 1-byte program (256) on **NANO**, a tiny
-   simulated CPU inside the kernel, and classifies what each one does.
-   The work is split over the cluster: SPECHT 00-3F, ADLER 40-7F, KNECHT 80-BF, FALKE C0-FF.
-   Results are shared over ethernet, so every node shows the complete map.
-   Without a network card, one PC runs all 256 itself.
-3. **Viewer**: a 16×16 map coloured by behaviour. The side panel shows the selected program's
-   instruction, class, the node that computed it, A, outputs, memory and the 8×8 display.
-
-### v0.3: bit programs (press TAB)
-
-![bit programs](docs/v0.3-bit-programs.png)
-
-**BIT CPU**: every instruction is one bit. `0` flips the pixel under the head, and `1` moves the head one pixel
-right. The 8×8 display is a 64-pixel strip read row by row. A program repeats for 128 steps.
-There are only **2 one-bit programs** (`0` and `1`), so the explorer covers every program from 1 to 7 bits:
-2+4+…+128 = **254 programs**. Grid cell = `1` followed by the program bits, so `02` = `0`, `03` = `1`,
-`05` = `01`, `FF` = `1111111`. The work is split across the cluster like the byte programs.
-
-- `1`: only moves, never draws (IDLE)
-- `0`: one pixel blinking 128 times, so it ends dark (ACTIVE)
-- `01`: fills the screen. `011`: vertical stripes that wrap around and partly erase themselves
-- Result: 207 DRAW, 40 ACTIVE, 7 IDLE
-
-Verified: both result tables were dumped from a running node's memory and compared against an independent
-Python model. All 512 records match.
-
-### NANO CPU
-
-16 bytes of memory (M0-MF), register A. The program is loaded at M0, and the PC wraps at program length,
-so a 1-byte program runs its instruction again on every step for 64 steps. M8-MF is an 8×8 pixel display.
-Programs can overwrite themselves.
-
-| op | name | effect | op | name | effect |
-|----|------|--------|----|------|--------|
-| 0n | NOP  | -            | 8n | JZ   | if A=0: PC=n |
-| 1n | LDI  | A = n        | 9n | INC  | M[n]++ |
-| 2n | ADDI | A += n       | An | DEC  | M[n]-- |
-| 3n | SUBI | A -= n       | Bn | ROL  | A rotate left n |
-| 4n | LD   | A = M[n]     | Cn | XOR  | A ^= M[n] |
-| 5n | ST   | M[n] = A     | Dn | OUT  | output M[n] |
-| 6n | ADD  | A += M[n]    | En | NOT  | M[n] = ~M[n] |
-| 7n | JMP  | PC = n       | Fn | HLT  | stop |
-
-Classes: **DRAW** (lit the display) > **OUTPUT** > **SELF-MOD** (changed its own byte) >
-**ACTIVE** (A or memory changed at some step) > **HALT** > **IDLE**. PENDING means the node that owns that
-program hasn't sent its result yet.
-
-Some discoveries:
-- `D0` is a quine: it prints its own byte.
-- `50` deletes itself.
-- `A0` turns itself into `9F` and starts counting on the bottom display row.
-- `E8` blinks the top display row.
-- `60` and `C0` look idle at the end but were busy in between. Because of this, classification uses everything
-  that happened during all 64 steps, not just the final state.
-
-## Files
-
-| file | what |
-|------|------|
-| `src/boot.hex`   | boot sector (512 bytes): loads the kernel with BIOS LBA read |
-| `src/kernel.hex` | kernel: cluster networking, NANO CPU, explorer, viewer |
-| `tools/build.py` | turns hex into the disk image and checks every `=XXXX` offset marker |
-| `tools/disasm.py`| decodes the image back to instructions to verify the hand-written bytes |
-| `tools/switch.py`| virtual ethernet hub for the QEMU test cluster (not part of the OS) |
-
-Hex format: `XX XX ; comment`. `=XXXX` asserts the current offset. `>XXXX` pads with zeros up to that offset.
-
-## Real hardware: not yet
-
-Tested only in QEMU so far. Read from the real nodes over SSH (2026-10-06):
-
-| node | network chip in use | PCI ID | MAC | firmware |
-|------|-------------------|--------|-----|----------|
-| specht32 | Intel I219-V | 8086:15b8 | 4c:ed:fb:94:98:f9 | UEFI, Secure Boot off |
-| adler40  | Intel I226-V | 8086:125c | 04:7c:16:83:97:d4 | UEFI, Secure Boot off |
-| knecht24 | Realtek RTL8125 2.5G (+ unused Intel I211 8086:1539) | 10ec:8125 | 70:85:c2:b3:80:43 | UEFI, Secure Boot off |
-| falke64  | Intel I226-V | 8086:125c | 60:cf:84:ea:9a:fa | UEFI, Secure Boot off |
-
-Still missing for real hardware:
-- drivers for I226 (2 nodes), I219 and RTL8125. The OS currently only has RTL8139.
-- a UEFI loader (an `.efi` file, also written in hex). The machines boot UEFI, and the BIOS boot sector may not start.
-- a table mapping the MACs above to node names. The current "last MAC byte = id" only works in QEMU.
-- **These four PCs are the live, shared GPU cluster** (see `C:\Users\end\dev\cluster`). Booting Dimension42 on one
-  (even from USB, without touching the disk) takes its LLM services offline for everyone. Only do it with
-  explicit approval and coordinated with jamie.
-
-## Roadmap
-
-- v0.3: explore 2-byte programs (65,536) split over the cluster; turn found programs into reusable building blocks
-- v0.4: protected/long mode, more memory, faster
-- v0.5: shared memory and task scheduling across the 4 nodes, so they act as one system
+Cluster scripts contain the original SSH hostnames and paths. These quickstarts use local tools; configure your own hosts before using orchestration scripts. Six-byte mapping and later training are ongoing. Committed logs are snapshots, not live status.

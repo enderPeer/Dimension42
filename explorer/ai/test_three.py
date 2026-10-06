@@ -7,8 +7,9 @@ Every program the model writes climbs a staircase of checks:
   step 1  answers 2 + 2 + 2 = 6
   step 2  correct on 32 more triples
   step 3  correct on ALL 16,777,216 triples (proof on the GPU, nano_search3 verify)
-Runs on adler40. usage: python test_three.py
+Runs locally on one NVIDIA GPU by default. usage: python test_three.py --help
 """
+import argparse
 import collections
 import json
 import math
@@ -17,17 +18,51 @@ import random
 import subprocess
 import time
 
+from experiment_support import parse_proof_output
+
+HERE = pathlib.Path(__file__).resolve().parent
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--gpu", type=int, default=0, help="CUDA device for training (default: 0)")
+parser.add_argument("--verifier-gpu", type=int, help="CUDA device for verification (defaults to --gpu)")
+parser.add_argument("--verifier", type=pathlib.Path, default=HERE.parent / "nano_search3")
+parser.add_argument("--data", type=pathlib.Path, default=HERE / "data")
+parser.add_argument("--output", type=pathlib.Path, default=HERE / "results_three_local.json")
+parser.add_argument("--samples", type=int, default=2000)
+parser.add_argument("--epochs", type=int, default=4)
+parser.add_argument("--check-only", action="store_true", help="Check input files and verifier path without starting training")
+args = parser.parse_args()
+if args.samples < 1 or args.epochs < 1 or args.gpu < 0 or (args.verifier_gpu is not None and args.verifier_gpu < 0):
+    parser.error("samples/epochs must be positive and GPU indices nonnegative")
+args.verifier = args.verifier.resolve()
+args.data = args.data.resolve()
+if not args.verifier.is_file():
+    parser.error(f"Compile nano_search3.cu first; verifier not found: {args.verifier}")
+required = ["adders_c5_6", "adders_c5_7", "adders_c5_8", "adders_c5_9", "adders_c6_7", "adders_c6_9", "adders_c7_8", "adders_c8_9",
+            "add3_c5_6_7", "add3_c5_6_9", "add3_c5_7_8", "add3_c5_8_9", "add3_c6_7_9", "add3_c7_8_9",
+            "add3_c5_6_8", "add3_c5_7_9", "add3_c6_7_8", "add3_c6_8_9"]
+missing = [n for n in required if not (args.data / (n + ".txt")).is_file()]
+if missing:
+    parser.error("Run prepare_data.py first; missing datasets: " + ", ".join(missing))
+if args.check_only:
+    print("All 18 datasets and the verifier executable are present; CUDA execution has not been tested.")
+    raise SystemExit(0)
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-HERE = pathlib.Path(__file__).resolve().parent
-DATA = HERE / "data"
+if not torch.cuda.is_available() or args.gpu >= torch.cuda.device_count():
+    parser.error("Requested training GPU is unavailable; install CUDA-enabled PyTorch and check --gpu")
+verifier_gpu = args.gpu if args.verifier_gpu is None else args.verifier_gpu
+if verifier_gpu >= torch.cuda.device_count():
+    parser.error("Requested verifier GPU is unavailable")
+torch.cuda.set_device(args.gpu)
+DATA = args.data
 TRAIN2 = [(5, 6), (5, 7), (5, 8), (5, 9), (6, 7), (6, 9), (7, 8), (8, 9)]
 TRAIN3 = [(5, 6, 7), (5, 6, 9), (5, 7, 8), (5, 8, 9), (6, 7, 9), (7, 8, 9)]
 TEST3 = [(5, 6, 8), (5, 7, 9), (6, 7, 8), (6, 8, 9)]
-SAMPLES = 2000
-dev = "cuda"
+SAMPLES = args.samples
+dev = f"cuda:{args.gpu}"
 PAD, ADD, SEP, CELL = 32, 33, 34, 16                  # tokens 0..15 = hex digits, 16..31 = cells M0..MF
 V, T = 35, 15
 TRI = [(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 2, 3), (3, 2, 1), (2, 3, 1), (5, 0, 7), (255, 1, 0), (0, 255, 1),
@@ -82,9 +117,9 @@ def first_out(p, cells, vals):
 
 def proof(progs, cells):
     data = "".join(f"5 {p:x} {cells[0]} {cells[1]} {cells[2]}\n" for p in progs)
-    out = subprocess.run([str(HERE.parent / "nano_search3"), "verify", "1"], input=data, capture_output=True,
-                         text=True, cwd=HERE.parent).stdout
-    return {int(l.split()[1], 16): " fails=0 " in l for l in out.splitlines()}
+    out = subprocess.run([str(args.verifier), "verify", str(verifier_gpu)], input=data, capture_output=True,
+                         text=True, cwd=args.verifier.parent, check=True).stdout
+    return parse_proof_output(out, progs, cells)
 
 
 class GPT(nn.Module):
@@ -106,7 +141,7 @@ def train(rows, seed):
     X = torch.tensor(rows, dtype=torch.long)
     model = GPT().to(dev)
     opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.01)
-    epochs, bs = 4, 1024
+    epochs, bs = args.epochs, 1024
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=1e-3, total_steps=epochs * math.ceil(len(X) / bs))
     t0 = time.time()
     for ep in range(epochs):
@@ -171,5 +206,6 @@ for exp, res in results.items():
         print(f"  {k}: of {r['written']}: step1 {r['step1_2+2+2=6']:5d}  step2 {r['step2_32_triples']:5d}  "
               f"step3 PROVEN {r['step3_all_16.7M_triples']:5d}  ({r['different_proven']} different, "
               f"{r['proven_not_in_training']} new)   answers for 2+2+2: {r['most_common_answers_for_2+2+2']}")
-(HERE / "results_three.json").write_text(json.dumps(results, indent=1))
-print("saved results_three.json")
+args.output.parent.mkdir(parents=True, exist_ok=True)
+args.output.write_text(json.dumps(results, indent=1))
+print(f"saved {args.output}")

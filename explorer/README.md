@@ -160,5 +160,7 @@ Real full-cluster run of all 4-byte programs: 369 ms compute (11.6 G/s, because 
 | 9 bytes | | ~8,800 years |
 | 10 bytes | | ~2.2 million years |
 
-Each extra byte multiplies the time by 256. Rows from 5 bytes up are extrapolated from the measured speed, and
-the current GPU code supports programs up to 4 bytes.
+Each extra byte multiplies the search space by 256. This timing table is historical: it predates the
+completed five-byte run. Current GPU explorers accept lengths 1–8; the five-byte map's measured wall time
+is in `results/L5/manifest.json`. Six-byte mapping is in progress. See the root README for the current
+quickstart and the distinction between behavior classification and verified input/output functions.

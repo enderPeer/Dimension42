@@ -1,0 +1,45 @@
+{
+  "source": "https://github.com/enderPeer/Dimension42",
+  "reference": "explorer/nano_ref.py:first_out",
+  "reference_sha256": "416ed1b8807a5bf063599b22305fd3a0789d746b03be21b1dbfcd2b147407b69",
+  "semantics": "5-byte NANO; inputs M5/M6; A and other non-code cells zero; first output within 64 steps",
+  "programs": [
+    {
+      "program_hex": "00456650D0",
+      "task": "add_mod_256",
+      "input_pairs_checked": 65536,
+      "failures": 0,
+      "outputs_sha256_a_major_b_minor": "4efe2ac4367e746f5086a4c6563dc12683392f160b5af811384d5dafa4f48218"
+    },
+    {
+      "program_hex": "00456651D1",
+      "task": "add_mod_256",
+      "input_pairs_checked": 65536,
+      "failures": 0,
+      "outputs_sha256_a_major_b_minor": "4efe2ac4367e746f5086a4c6563dc12683392f160b5af811384d5dafa4f48218"
+    },
+    {
+      "program_hex": "00456652D2",
+      "task": "add_mod_256",
+      "input_pairs_checked": 65536,
+      "failures": 0,
+      "outputs_sha256_a_major_b_minor": "4efe2ac4367e746f5086a4c6563dc12683392f160b5af811384d5dafa4f48218"
+    },
+    {
+      "program_hex": "00456653D3",
+      "task": "add_mod_256",
+      "input_pairs_checked": 65536,
+      "failures": 0,
+      "outputs_sha256_a_major_b_minor": "4efe2ac4367e746f5086a4c6563dc12683392f160b5af811384d5dafa4f48218"
+    },
+    {
+      "program_hex": "17C5915071",
+      "task": "xor_with_7",
+      "input_pairs_checked": 65536,
+      "failures": 0,
+      "outputs_sha256_a_major_b_minor": "3ede5e8945fe862d27295cb8a231b494523447f8f31e0f6b5450e61967126aea"
+    }
+  ],
+  "trace_rows": 160,
+  "sample_seed": 42
+}

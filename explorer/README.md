@@ -162,5 +162,6 @@ Real full-cluster run of all 4-byte programs: 369 ms compute (11.6 G/s, because 
 
 Each extra byte multiplies the search space by 256. This timing table is historical: it predates the
 completed five-byte run. Current GPU explorers accept lengths 1–8; the five-byte map's measured wall time
-is in `results/L5/manifest.json`. Six-byte mapping is in progress. See the root README for the current
+is in `results/L5/manifest.json`. The six-byte run has finished on the cluster; its map and signatures are not yet
+published here, its functions are unverified beyond the probes, and no model is trained on them. See the root README for the current
 quickstart and the distinction between behavior classification and verified input/output functions.

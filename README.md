@@ -189,4 +189,4 @@ See [OS instructions, opcodes, and hardware limitations](docs/OS.md). Real clust
 - [Small verified trace dataset](datasets/nano-adders-sample/README.md) · [Hugging Face download](https://huggingface.co/datasets/Egoplayer/Dimension42-nano-traces)
 - [Community sharing material](docs/community/README.md)
 
-Cluster scripts contain the original SSH hostnames and paths. These quickstarts use local tools; configure your own hosts before using orchestration scripts. Six-byte mapping and later training are ongoing. Committed logs are snapshots, not live status.
+Cluster scripts contain the original SSH hostnames and paths. These quickstarts use local tools; configure your own hosts before using orchestration scripts. The six-byte map run (all 2^48 programs) has finished on the cluster and its behavior classes and probe signatures are mapped, but that data is not yet published here: the committed `explorer/results/L6/` logs are a partial snapshot, not the full result. Six-byte functions are identified from probe signatures only and have **not** been verified on all inputs, and no model has been trained on six-byte programs.

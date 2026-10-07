@@ -8,6 +8,8 @@ import pathlib, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TABLE = [("flip", 4), ("flip", 8), ("set", 3), ("clear", 3)]   # ops 00 01 10 11
 STEPS = 127
+WIDTH = 64                       # screen is WIDTH x WIDTH pixels
+PIXELS = WIDTH * WIDTH
 
 
 def run(bits, steps=STEPS):
@@ -20,12 +22,12 @@ def run(bits, steps=STEPS):
         if pen == "flip": scr ^= m
         elif pen == "set": scr |= m
         else: scr &= ~m
-        head = (head + stride) & 63
+        head = (head + stride) & (PIXELS - 1)
     return scr
 
 
 def picture(scr):
-    return "".join(("#" if scr >> i & 1 else ".") + ("\n" if i % 8 == 7 else "") for i in range(64))
+    return "".join(("#" if scr >> i & 1 else ".") + ("\n" if i % WIDTH == WIDTH - 1 else "") for i in range(PIXELS))
 
 
 def check(lmax):

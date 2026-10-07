@@ -6,23 +6,29 @@ The experiment starts again at one bit and two possibilities. Programs are bit s
 at a time toward a ceiling of **6 bytes = 48 bits**, and the instruction table was chosen by exhaustive
 search so that this universe produces the **largest number of different programs** for its size.
 
-| Generation | Programs | Different screens | New screens never seen before |
-|---:|---:|---:|---:|
-| 1 bit | 2 | 2 | 2 |
-| 2 bits | 4 | 4 | 2 |
-| 3 bits | 8 | 8 | 6 |
-| 4 bits | 16 | 14 | 10 |
-| 8 bits | 256 | 242 | 228 |
-| 16 bits | 65,536 | 59,987 | |
-| 22 bits | 4,194,304 | 4,138,003 | |
-| **1..22 bits** | **8,388,606** | **8,318,667 = 99.17%** | |
+| Generation | Programs | Different screens |
+|---:|---:|---:|
+| 1 bit | 2 | 2 |
+| 2 bits | 4 | 4 |
+| 3 bits | 8 | 8 |
+| 4 bits | 16 | 16 |
+| 8 bits | 256 | 256 |
+| 16 bits | 65,536 | 65,536 |
+| 22 bits | 4,194,304 | 4,194,304 |
+| **1..22 bits** | **8,388,606** | **8,388,606 = 100%** |
 
-Full table: [results/variety-to-22-bits.txt](results/variety-to-22-bits.txt). Every program of 1 to 8 bits
-with its screen: [results/generations-1-to-8.txt](results/generations-1-to-8.txt).
+Every program up to 22 bits draws a picture no other program of its length draws. Full table:
+[results/variety-to-22-bits.txt](results/variety-to-22-bits.txt). Every program of 1 to 6 bits with its
+screen: [results/generations-1-to-6.txt](results/generations-1-to-6.txt). Across generations the only
+repeats are the inevitable ones: `0000` is the same program as `00` and `0`.
+
+The first version of this universe had an 8×8 screen and reached 99.17% on the same programs; its numbers
+are kept in [results/table-search.txt](results/table-search.txt). The law did not change when the screen
+grew, only the wrap of the head.
 
 ## The law of this universe
 
-- **The world** is an 8×8 screen of 64 pixels, all dark at the start, and a head that starts at pixel 0 (top left).
+- **The world** is a 64×64 screen of 4,096 pixels, all dark at the start, and a head that starts at pixel 0 (top left).
 - **A program** is a string of 1 to 48 bits. It is read cyclically: after the last bit comes the first.
 - **An instruction** is two bits. There are exactly four, so every bit pattern is a valid program and no
   two codes mean the same thing. There is no NOP and no HALT.
@@ -35,8 +41,8 @@ with its screen: [results/generations-1-to-8.txt](results/generations-1-to-8.txt
 | `10` | **S3** | light the pixel under the head, then head += 3 |
 | `11` | **C3** | darken the pixel under the head, then head += 3 |
 
-The head wraps modulo 64. The table lives at file offset `0134` of [`src/u7.hex`](src/u7.hex): eight
-bytes, pen then stride for each code.
+The head wraps modulo 4,096, so stride 64 would be one row down. The table lives at file offset `0158` of
+[`src/u7.hex`](src/u7.hex): eight bytes, pen then stride for each code.
 
 ### Why this table
 
@@ -55,34 +61,37 @@ five rounds:
 4. **The step count.** An even number of steps is a trap: a flip instruction run alone revisits every pixel
    an even number of times and leaves the screen dark, so the 1-bit programs `0` and `1` would be identical.
    127 is odd, close to the original 128, and scores among the best of all odd counts from 65 to 255.
-5. **Confirmation up to 22 bits**, all 8,388,606 programs: **99.17%** distinct.
+5. **Confirmation up to 22 bits** on the original 8×8 screen: **99.17%** distinct. The missing 0.83% were
+   programs whose head orbit closed within 127 steps on 64 pixels and erased part of its own drawing.
+6. **The screen grows to 64×64.** With 4,096 pixels the head never wraps inside a run, so paths stop
+   erasing each other. 894 of 5,985 candidate tables now tie at 100% on short programs. The original
+   law was kept because it stays at **100.00% on all 8,388,606 programs up to 22 bits**, while most rivals
+   fall apart when the step count grows (see round 6 in the search record).
 
-What stops it reaching 100%: a program repeated is the same program. `0000` runs exactly like `00` and `0`,
-so at 4 bits at most 14 of 16 screens can be new within the generation. Lengths that divide the run evenly
-(8, 16) also collapse a little more. Up to 22 bits, 1,043 programs lose to a cycle on the 48-bit horizon.
+The screen is now larger than the program space: 2^4096 pictures against at most 2^48 programs. Variety is
+no longer limited by the canvas, only by the law and the 127-step run.
 
-## The runner: 316 bytes of x86-64
+## The runner: 352 bytes of x86-64
 
 [`src/u7.hex`](src/u7.hex) is a complete, static Linux executable written byte by byte. There is no
-assembler and no compiler. It is a 64-byte ELF header, a 56-byte program header, 180 bytes of code, and the
-8-byte instruction table.
+assembler and no compiler. It is a 64-byte ELF header, a 56-byte program header, 224 bytes of code, and the
+8-byte instruction table. The screen is 512 bytes on the stack; one `btc`, `bts`, or `btr` with a register bit
+offset draws a pixel.
 
 ~~~bash
-python tools/build.py          # hex text -> build/u7 (316 bytes)
-./build/u7 0110                # run a program and print the screen
+python tools/build.py          # hex text -> build/u7 (352 bytes)
+./build/u7 0110                # run a program and print the 64x64 screen
 ~~~
 
 ~~~
-$ ./build/u7 0110
-#.#.#.#.
-...#.#.#
-.#....#.
-#.#.#...
-.#.#.#.#
-....#.#.
-#.#....#
-.#.#.#..
+$ ./build/u7 0110 | head -4
+#.......#..#.......#..#.......#..#.......#..#.......#..#.......#
+..#.......#..#.......#..#.......#..#.......#..#.......#..#......
+.#..#.......#..#.......#..#.......#..#.......#..#.......#..#....
+...#..#.......#..#.......#..#.......#..#.......#..#.......#..#..
 ~~~
+
+(The first four of 64 rows.)
 
 `tools/build.py` only converts hex to bytes and checks the `=XXXX` offset markers, exactly like the
 Dimension42 OS build.
@@ -93,8 +102,8 @@ These are not part of the universe. They only measure it.
 
 | Tool | What |
 |---|---|
-| `tools/ref.py` | Reference model. `python tools/ref.py --check 12` runs the built binary on all 8,190 programs up to 12 bits and compares every screen. Result: 0 mismatches. |
-| `tools/variety.c` | Counts distinct screens per generation. `gcc -O2 -fopenmp tools/variety.c -o build/variety && ./build/variety 22` reproduces the table above in a few minutes. |
+| `tools/ref.py` | Reference model. `python tools/ref.py --check 12` runs the built binary on all 2,046 programs up to 10 bits and compares every screen. Result: 0 mismatches. |
+| `tools/variety.c` | Counts distinct screens per generation. `gcc -O2 -fopenmp tools/variety.c -o build/variety && ./build/variety 22` reproduces the table above in about ten minutes. |
 | `tools/table_search.c` | The exhaustive table search that chose the law. |
 
 ## Horizon

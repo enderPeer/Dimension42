@@ -109,3 +109,17 @@ steps=175    TOTAL 8036456 / 8388606  95.802%
 steps=245    TOTAL 8280558 / 8388606  98.712%
 
 Chosen: 00=F4 01=F8 10=S3 11=C3, 127 steps.
+
+--- Round 6 (2026-10-07): screen enlarged from 8x8 to 64x64 (4096 pixels, head wraps mod 4096)
+Every 4-op pen table over strides {1,3,7,9,63,64,65,127,129,257,511} and pens F/S/C, 127 steps, L<=13:
+894 of 5985 tables reach 100.000% distinct screens, with a perfect [2 4 8 16] at 1..4 bits
+(the big screen never wraps within 127 steps, so paths rarely collide).
+Tie-break on L<=16 and L<=20 at 127 / 1023 / 4095 steps:
+  F4 F8 S3 C3   steps 127:  L<=16 100.0000%   L<=20 2097150/2097150 = 100.0000%
+  F4 F8 S3 C3   steps 1023: L<=16 100.0000%   L<=20 2097149/2097150
+  F4 F8 S3 C3   steps 4095: L<=16  96.7041%
+  F1 F64 S3 C3  steps 127:  L<=16 100.0000%
+  S3 S65 S129 C65 steps 127: 100.0000%, steps 4095: 84.3595%
+  F1 F64 S65 C63 steps 127:  86.7498%
+Kept: the same law, 00=F4 01=F8 10=S3 11=C3, 127 steps. Only the screen changed.
+Confirmation, all 8,388,606 programs of 1..22 bits on 64x64: 8,388,606 distinct screens, 100.00%.

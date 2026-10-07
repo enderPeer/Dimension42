@@ -1,7 +1,7 @@
 /* Universe 7 variety counter (host-side observer, not part of the universe).
  *
  * Runs every program of 1..Lmax bits on the Universe 7 machine and counts
- * how many distinct final screens they produce. The machine here must match
+ * how many distinct final screens they produce (by 64-bit hash of the 4096-pixel screen). The machine here must match
  * src/u7.hex exactly; tools/ref.py checks the built binary against it.
  *
  *   gcc -O2 -fopenmp tools/variety.c -o build/variety
@@ -10,23 +10,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 static const int PEN[4]    = {0, 0, 1, 2};   /* 0 flip, 1 set, 2 clear */
 static const int STRIDE[4] = {4, 8, 3, 3};
 #define STEPS 127
+#define PIXELS 4096      /* 64 x 64 screen */
 
 static uint64_t run(uint64_t p, int L) {
-    uint64_t scr = 0; int h = 0, pc = 0;
+    uint64_t scr[PIXELS / 64]; memset(scr, 0, sizeof scr); int h = 0, pc = 0;
     for (int s = 0; s < STEPS; s++) {
         int b1 = (p >> (L - 1 - pc)) & 1; pc = (pc + 1) % L;
         int b0 = (p >> (L - 1 - pc)) & 1; pc = (pc + 1) % L;
         int op = b1 * 2 + b0;
-        if (PEN[op] == 0) scr ^= 1ULL << h;
-        else if (PEN[op] == 1) scr |= 1ULL << h;
-        else scr &= ~(1ULL << h);
-        h = (h + STRIDE[op]) & 63;
+        uint64_t m = 1ULL << (h & 63);
+        if (PEN[op] == 0) scr[h >> 6] ^= m;
+        else if (PEN[op] == 1) scr[h >> 6] |= m;
+        else scr[h >> 6] &= ~m;
+        h = (h + STRIDE[op]) & (PIXELS - 1);
     }
-    return scr;
+    /* FNV-1a hash of the screen stands in for the screen itself */
+    uint64_t hsh = 1469598103934665603ULL;
+    for (int i = 0; i < PIXELS / 64; i++) hsh = (hsh ^ scr[i]) * 1099511628211ULL;
+    return hsh;
 }
 static int cmp(const void *a, const void *b) { uint64_t x = *(const uint64_t *)a, y = *(const uint64_t *)b; return x < y ? -1 : x > y; }
 int main(int argc, char **argv) {

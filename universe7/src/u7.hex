@@ -1,5 +1,24 @@
 ;; =====================================================================
-;;  UNIVERSE 7  -  THE RUNNER  (x86-64 Linux, static ELF, 316 bytes)
+;;  UNIVERSE 7  -  THE RUNNER  (x86-64 Linux, static ELF, 352 bytes)
+;; =====================================================================
+;;  Pure machine code. No assembler, no compiler, no libc. Every byte
+;;  below is loaded and executed exactly as written. Text after ';' only
+;;  says what the bytes mean.
+;;
+;;  Format:  hex bytes   ; comment
+;;           =XXXX       ; assert: we are now at file offset XXXX
+;;
+;;  Usage:   ./u7 <bits>      e.g.  ./u7 0110
+;;  Runs the bit program for 127 steps on the 64x64 screen and prints it
+;;  as 64 lines of 64 characters ('.' dark, '#' lit).
+;;  Loaded at 0x400000. Entry = file offset 0078.
+;;
+;;  Registers while running:
+;;    rsi = program text ('0'/'1' bytes)   ecx = L, bits in the program
+;;    rbx = screen, 512 bytes on the stack (bit i = pixel i, row-major,
+;;          bit 0 = top left, 64 pixels per row)
+;;    r8  = head (0..4095)   r9 = pc, bit index   r10 = steps left
+;;    rdi = instruction table (file offset 0158)
 ;; =====================================================================
 
 ;; ---------------------------------------------------------------------
@@ -26,8 +45,8 @@
 00 00 00 00 00 00 00 00                         ; p_offset = 0
 00 00 40 00 00 00 00 00                         ; p_vaddr  = 0x400000
 00 00 40 00 00 00 00 00                         ; p_paddr  = 0x400000
-3C 01 00 00 00 00 00 00                         ; p_filesz = 0x13C (316 bytes)
-3C 01 00 00 00 00 00 00                         ; p_memsz  = 0x13C
+60 01 00 00 00 00 00 00                         ; p_filesz = 0x160 (352 bytes)
+60 01 00 00 00 00 00 00                         ; p_memsz  = 0x160
 00 10 00 00 00 00 00 00                         ; p_align  = 0x1000
 
 ;; ---------------------------------------------------------------------
@@ -40,11 +59,18 @@
 74 04                                           ; je .go
 FF C1                                           ; inc ecx
 EB F6                                           ; jmp .len
-31 DB                                           ; .go:    xor ebx,ebx             ; screen, 64 pixels
+41 89 CB                                        ; .go:    mov r11d,ecx            ; keep L
+48 81 EC 00 02 00 00                            ; sub rsp,512             ; screen: 4096 pixels = 512 bytes
+48 89 E3                                        ; mov rbx,rsp
+48 89 E7                                        ; mov rdi,rsp
+31 C0                                           ; xor eax,eax
+B9 40 00 00 00                                  ; mov ecx,64
+F3 48 AB                                        ; rep stosq               ; all dark
+44 89 D9                                        ; mov ecx,r11d
 45 31 C0                                        ; xor r8d,r8d             ; head
 45 31 C9                                        ; xor r9d,r9d             ; pc (bit index)
 41 BA 7F 00 00 00                               ; mov r10d,127            ; steps (odd: see README)
-48 8D 3D 96 00 00 00                            ; lea rdi,[rel table]
+48 8D 3D 9F 00 00 00                            ; lea rdi,[rel table]
 42 0F B6 04 0E                                  ; .step:  movzx eax,byte [rsi+r9]
 83 E0 01                                        ; and eax,1
 41 FF C1                                        ; inc r9d
@@ -62,36 +88,36 @@ EB F6                                           ; jmp .len
 0F B6 44 47 01                                  ; movzx eax,byte [rdi+rax*2+1]    ; stride
 85 D2                                           ; test edx,edx
 75 06                                           ; jnz .set
-4C 0F BB C3                                     ; btc rbx,r8
+4C 0F BB 03                                     ; btc [rbx],r8
 EB 0E                                           ; jmp .move
 FF CA                                           ; .set:   dec edx
 75 06                                           ; jnz .clr
-4C 0F AB C3                                     ; bts rbx,r8
+4C 0F AB 03                                     ; bts [rbx],r8
 EB 04                                           ; jmp .move
-4C 0F B3 C3                                     ; .clr:   btr rbx,r8
+4C 0F B3 03                                     ; .clr:   btr [rbx],r8
 41 01 C0                                        ; .move:  add r8d,eax
-41 83 E0 3F                                     ; and r8d,63
+41 81 E0 FF 0F 00 00                            ; and r8d,4095
 41 FF CA                                        ; dec r10d
-75 AA                                           ; jnz .step
-48 83 EC 50                                     ; sub rsp,80
+75 A7                                           ; jnz .step
+48 81 EC 40 10 00 00                            ; sub rsp,4160            ; 64 rows x (64 chars + newline)
 48 89 E7                                        ; mov rdi,rsp
 31 C9                                           ; xor ecx,ecx
 B0 2E                                           ; .px:    mov al,'.'
-48 0F A3 CB                                     ; bt rbx,rcx
+48 0F A3 0B                                     ; bt [rbx],rcx
 73 02                                           ; jnc .put
 B0 23                                           ; mov al,'#'
 AA                                              ; .put:   stosb
 FF C1                                           ; inc ecx
-F6 C1 07                                        ; test cl,7
+F6 C1 3F                                        ; test cl,63
 75 EE                                           ; jnz .px
 B0 0A                                           ; mov al,10
 AA                                              ; stosb
-83 F9 40                                        ; cmp ecx,64
-72 E6                                           ; jb .px
-B8 01 00 00 00                                  ; mov eax,1               ; write(1, buf, 72)
+81 F9 00 10 00 00                               ; cmp ecx,4096
+72 E3                                           ; jb .px
+B8 01 00 00 00                                  ; mov eax,1               ; write(1, buf, 4160)
 BF 01 00 00 00                                  ; mov edi,1
 48 89 E6                                        ; mov rsi,rsp
-BA 48 00 00 00                                  ; mov edx,72
+BA 40 10 00 00                                  ; mov edx,4160
 0F 05                                           ; syscall
 B8 3C 00 00 00                                  ; mov eax,60              ; exit(0)
 31 FF                                           ; xor edi,edi
@@ -102,9 +128,9 @@ B8 3C 00 00 00                                  ; mov eax,60              ; exit
 ;;  byte 0: pen  (00 flip, 01 set, 02 clear)      byte 1: head stride
 ;;  Chosen by exhaustive search for maximum variety; see README.
 ;; ---------------------------------------------------------------------
-=0134
+=0158
 00 04                                           ; table:  db 0,4                  ; 00  F4  flip, head += 4
 00 08                                           ; db 0,8                  ; 01  F8  flip, head += 8
 01 03                                           ; db 1,3                  ; 10  S3  set,  head += 3
 02 03                                           ; db 2,3                  ; 11  C3  clear, head += 3
-=013C
+=0160

@@ -1,0 +1,110 @@
+;; =====================================================================
+;;  UNIVERSE 7  -  THE RUNNER  (x86-64 Linux, static ELF, 316 bytes)
+;; =====================================================================
+
+;; ---------------------------------------------------------------------
+;;  ELF64 header (64 bytes) + one PT_LOAD program header (56 bytes)
+;; ---------------------------------------------------------------------
+=0000
+7F 45 4C 46                                     ; magic
+02 01 01 00                                     ; 64-bit, little endian, version 1, System V
+00 00 00 00 00 00 00 00                         ; padding
+02 00                                           ; e_type    = EXEC
+3E 00                                           ; e_machine = x86-64
+01 00 00 00                                     ; e_version
+78 00 40 00 00 00 00 00                         ; e_entry   = 0x400078
+40 00 00 00 00 00 00 00                         ; e_phoff   = 64
+00 00 00 00 00 00 00 00                         ; e_shoff   = 0 (no sections)
+00 00 00 00                                     ; e_flags
+40 00                                           ; e_ehsize  = 64
+38 00                                           ; e_phentsize = 56
+01 00                                           ; e_phnum   = 1
+00 00 00 00 00 00                               ; e_shentsize, e_shnum, e_shstrndx
+=0040
+01 00 00 00                                     ; p_type  = PT_LOAD
+05 00 00 00                                     ; p_flags = R+X
+00 00 00 00 00 00 00 00                         ; p_offset = 0
+00 00 40 00 00 00 00 00                         ; p_vaddr  = 0x400000
+00 00 40 00 00 00 00 00                         ; p_paddr  = 0x400000
+3C 01 00 00 00 00 00 00                         ; p_filesz = 0x13C (316 bytes)
+3C 01 00 00 00 00 00 00                         ; p_memsz  = 0x13C
+00 10 00 00 00 00 00 00                         ; p_align  = 0x1000
+
+;; ---------------------------------------------------------------------
+;;  Code. Entry point.
+;; ---------------------------------------------------------------------
+=0078
+48 8B 74 24 10                                  ; mov rsi,[rsp+16]        ; argv[1]: program bits as '0'/'1' text
+31 C9                                           ; xor ecx,ecx             ; L = bit count
+80 3C 0E 00                                     ; .len:   cmp byte [rsi+rcx],0
+74 04                                           ; je .go
+FF C1                                           ; inc ecx
+EB F6                                           ; jmp .len
+31 DB                                           ; .go:    xor ebx,ebx             ; screen, 64 pixels
+45 31 C0                                        ; xor r8d,r8d             ; head
+45 31 C9                                        ; xor r9d,r9d             ; pc (bit index)
+41 BA 7F 00 00 00                               ; mov r10d,127            ; steps (odd: see README)
+48 8D 3D 96 00 00 00                            ; lea rdi,[rel table]
+42 0F B6 04 0E                                  ; .step:  movzx eax,byte [rsi+r9]
+83 E0 01                                        ; and eax,1
+41 FF C1                                        ; inc r9d
+41 39 C9                                        ; cmp r9d,ecx
+72 03                                           ; jb .b2
+45 31 C9                                        ; xor r9d,r9d
+42 0F B6 14 0E                                  ; .b2:    movzx edx,byte [rsi+r9]
+83 E2 01                                        ; and edx,1
+41 FF C1                                        ; inc r9d
+41 39 C9                                        ; cmp r9d,ecx
+72 03                                           ; jb .dec
+45 31 C9                                        ; xor r9d,r9d
+8D 04 42                                        ; .dec:   lea eax,[rax*2+rdx]     ; op 0..3
+0F B6 14 47                                     ; movzx edx,byte [rdi+rax*2]      ; pen: 0 flip, 1 set, 2 clear
+0F B6 44 47 01                                  ; movzx eax,byte [rdi+rax*2+1]    ; stride
+85 D2                                           ; test edx,edx
+75 06                                           ; jnz .set
+4C 0F BB C3                                     ; btc rbx,r8
+EB 0E                                           ; jmp .move
+FF CA                                           ; .set:   dec edx
+75 06                                           ; jnz .clr
+4C 0F AB C3                                     ; bts rbx,r8
+EB 04                                           ; jmp .move
+4C 0F B3 C3                                     ; .clr:   btr rbx,r8
+41 01 C0                                        ; .move:  add r8d,eax
+41 83 E0 3F                                     ; and r8d,63
+41 FF CA                                        ; dec r10d
+75 AA                                           ; jnz .step
+48 83 EC 50                                     ; sub rsp,80
+48 89 E7                                        ; mov rdi,rsp
+31 C9                                           ; xor ecx,ecx
+B0 2E                                           ; .px:    mov al,'.'
+48 0F A3 CB                                     ; bt rbx,rcx
+73 02                                           ; jnc .put
+B0 23                                           ; mov al,'#'
+AA                                              ; .put:   stosb
+FF C1                                           ; inc ecx
+F6 C1 07                                        ; test cl,7
+75 EE                                           ; jnz .px
+B0 0A                                           ; mov al,10
+AA                                              ; stosb
+83 F9 40                                        ; cmp ecx,64
+72 E6                                           ; jb .px
+B8 01 00 00 00                                  ; mov eax,1               ; write(1, buf, 72)
+BF 01 00 00 00                                  ; mov edi,1
+48 89 E6                                        ; mov rsi,rsp
+BA 48 00 00 00                                  ; mov edx,72
+0F 05                                           ; syscall
+B8 3C 00 00 00                                  ; mov eax,60              ; exit(0)
+31 FF                                           ; xor edi,edi
+0F 05                                           ; syscall
+
+;; ---------------------------------------------------------------------
+;;  THE INSTRUCTION TABLE  (this is the universe's law: 2 bits -> 1 op)
+;;  byte 0: pen  (00 flip, 01 set, 02 clear)      byte 1: head stride
+;;  Chosen by exhaustive search for maximum variety; see README.
+;; ---------------------------------------------------------------------
+=0134
+00 04                                           ; table:  db 0,4                  ; 00  F4  flip, head += 4
+00 08                                           ; db 0,8                  ; 01  F8  flip, head += 8
+01 03                                           ; db 1,3                  ; 10  S3  set,  head += 3
+02 03                                           ; db 2,3                  ; 11  C3  clear, head += 3
+=013C

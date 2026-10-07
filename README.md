@@ -188,5 +188,6 @@ See [OS instructions, opcodes, and hardware limitations](docs/OS.md). Real clust
 - [Publication snapshot and checksums](docs/snapshots/2026-10-06-publication.json)
 - [Small verified trace dataset](datasets/nano-adders-sample/README.md) · [Hugging Face download](https://huggingface.co/datasets/Egoplayer/Dimension42-nano-traces)
 - [Community sharing material](docs/community/README.md)
+- [Universe 7](universe7/README.md): the machine-code-only experimental line, restarted at one bit on a table optimized for variety
 
 Cluster scripts contain the original SSH hostnames and paths. These quickstarts use local tools; configure your own hosts before using orchestration scripts. Six-byte mapping and later training are ongoing. Committed logs are snapshots, not live status.

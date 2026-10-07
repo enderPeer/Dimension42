@@ -1,0 +1,111 @@
+Universe 7 instruction-table search record (host-side measurement, 2026-10-07)
+
+Score = distinct final screens summed over all programs of 1..L bits, as a share of all programs.
+Op names: Fk = flip pixel under head, then head += k.  Sk = set, then += k.  Ck = clear, then += k.
+Mk = move only. SKIP/SKIPN = skip next op if pixel is set/clear. LOOP = pc:=0 if pixel set. BACK = pc:=0.
+
+--- Round 1: hand-picked tables incl. the Dimension42 BIT CPU (0=flip, 1=right), 128 steps, L<=14
+== A bitcpu 0=FLIP 1=RIGHT  TOTAL 1..14: programs=32766 screens=5607 (17.11%) traces=32766 (100.00%)
+== B 2bit FLIP RIGHT DOWN SKIP  TOTAL 1..14: programs=32766 screens=6692 (20.42%) traces=24997 (76.29%)
+== C 0=FLIP 10=RIGHT 110=DOWN 111=SKIP  TOTAL 1..14: programs=32766 screens=5192 (15.85%) traces=31206 (95.24%)
+== D 2bit FLIP RIGHT SKIP SKIPN  TOTAL 1..14: programs=32766 screens=866 (2.64%) traces=12080 (36.87%)
+== E 0=FLIP 10=RIGHT 11=SKIP  TOTAL 1..14: programs=32766 screens=2042 (6.23%) traces=28363 (86.56%)
+== F 0=FLIP 10=RIGHT 110=SKIP 111=DOWN  TOTAL 1..14: programs=32766 screens=5326 (16.25%) traces=31319 (95.58%)
+== G 7ops 00 FLIP 01 RIGHT 100 DOWN 101 SKIP 110 SKIPN 1110 LEFT 1111 BACK  TOTAL 1..14: programs=32766 screens=4064 (12.40%) traces=16810 (51.30%)
+== H 7ops 0 FLIP 10 RIGHT 110 DOWN 1110 SKIP 11110 SKIPN 111110 LEFT 111111 BACK  TOTAL 1..14: programs=32766 screens=5075 (15.49%) traces=28569 (87.19%)
+== I 2bit FLIP RIGHT DOWN BACK  TOTAL 1..14: programs=32766 screens=3195 (9.75%) traces=7125 (21.75%)
+== J 2bit FLIP RIGHT SKIP BACK  TOTAL 1..14: programs=32766 screens=1174 (3.58%) traces=5742 (17.52%)
+== K 0=FLIP 10=RIGHT 110=SKIP 111=BACK  TOTAL 1..14: programs=32766 screens=1841 (5.62%) traces=13940 (42.54%)
+== L 2bit FLIP RIGHT SKIP DOWN(=8)  TOTAL 1..14: programs=32766 screens=6795 (20.74%) traces=25035 (76.41%)
+== M 2bit FLIP RIGHT SKIP HOME  TOTAL 1..14: programs=32766 screens=794 (2.42%) traces=19040 (58.11%)
+== N 0=RIGHT 10=FLIP 11=SKIP  TOTAL 1..14: programs=32766 screens=3775 (11.52%) traces=27826 (84.92%)
+== O 2bit FLIP RIGHT SKIP SWAP  TOTAL 1..14: programs=32766 screens=1702 (5.19%) traces=18252 (55.70%)
+== P 2bit SET CLR RIGHT SKIP  TOTAL 1..14: programs=32766 screens=692 (2.11%) traces=12211 (37.27%)
+== Q 3bit 8ops FLIP RIGHT DOWN LEFT UP SKIP SKIPN BACK  TOTAL 1..14: programs=32766 screens=5654 (17.26%) traces=12450 (38.00%)
+== R 2bit FLIP RIGHT SKIP R9  TOTAL 1..14: programs=32766 screens=6292 (19.20%) traces=24003 (73.26%)
+== S 2bit FLIP RIGHT SKIP R3  TOTAL 1..14: programs=32766 screens=6151 (18.77%) traces=25080 (76.54%)
+== T 2bit FLIP RIGHT SKIP R7  TOTAL 1..14: programs=32766 screens=6978 (21.30%) traces=25388 (77.48%)
+== U 2bit FLIP RIGHT DOWN LOOP  TOTAL 1..14: programs=32766 screens=7075 (21.59%) traces=23807 (72.66%)
+== V 2bit FR RIGHT DOWN SKIP  TOTAL 1..14: programs=32766 screens=12512 (38.19%) traces=27501 (83.93%)
+== W 2bit FLIP FR DOWN SKIP  TOTAL 1..14: programs=32766 screens=12278 (37.47%) traces=29505 (90.05%)
+== X 2bit FLIP RIGHT DOWN SKIPN  TOTAL 1..14: programs=32766 screens=6071 (18.53%) traces=19070 (58.20%)
+== Y 2bit FLIP R3 DOWN SKIP  TOTAL 1..14: programs=32766 screens=6593 (20.12%) traces=24759 (75.56%)
+== Z 2bit FLIP RIGHT R9 SKIP  TOTAL 1..14: programs=32766 screens=6100 (18.62%) traces=24071 (73.46%)
+== a 0=FLIP 10=RIGHT 110=DOWN 1110=SKIP 1111=LEFT  TOTAL 1..14: programs=32766 screens=5412 (16.52%) traces=31183 (95.17%)
+== b 2bit FLIP RIGHT DOWN LEFT  TOTAL 1..14: programs=32766 screens=7194 (21.96%) traces=27184 (82.96%)
+== c 00 FLIP 01 RIGHT 10 DOWN 110 SKIP 111 SKIPN  TOTAL 1..14: programs=32766 screens=7675 (23.42%) traces=21871 (66.75%)
+== d 00 FLIP 01 RIGHT 10 SKIP 110 DOWN 111 LEFT  TOTAL 1..14: programs=32766 screens=5987 (18.27%) traces=24711 (75.42%)
+== e 00 FLIP 01 RIGHT 10 DOWN 110 SKIP 111 BACK  TOTAL 1..14: programs=32766 screens=5736 (17.51%) traces=14679 (44.80%)
+== f 00 FLIP 01 RIGHT 10 DOWN 110 SKIP 111 LOOP  TOTAL 1..14: programs=32766 screens=8146 (24.86%) traces=19988 (61.00%)
+
+--- Round 2: every 3-op table (codes 0,10,11) over 93 ops, 128 steps, L<=11. Top 25 of 125,580:
+ 99.54% 4075 0=F3 10=F4 11=S8
+ 99.54% 4075 0=F3 10=F12 11=S8
+ 99.51% 4074 0=F8 10=S9 11=C3
+ 99.51% 4074 0=F24 10=S3 11=C1
+ 99.51% 4074 0=F24 10=S1 11=C3
+ 99.51% 4074 0=F10 10=S7 11=C1
+ 99.49% 4073 0=F8 10=S3 11=C1
+ 99.49% 4073 0=F4 10=S9 11=C3
+ 99.49% 4073 0=F4 10=S8 11=C1
+ 99.49% 4073 0=F24 10=S9 11=C3
+ 99.49% 4073 0=F1 10=F12 11=S8
+ 99.44% 4071 0=F9 10=F16 11=S8
+ 99.44% 4071 0=F7 10=F16 11=S8
+ 99.44% 4071 0=F4 10=S8 11=C3
+ 99.44% 4071 0=F15 10=F16 11=S8
+ 99.44% 4071 0=F1 10=F4 11=S8
+ 99.44% 4071 0=F1 10=F16 11=S8
+ 99.41% 4070 0=F7 10=F24 11=S8
+ 99.41% 4070 0=F6 10=F9 11=S5
+ 99.41% 4070 0=F6 10=F7 11=S3
+ 99.41% 4070 0=F6 10=F63 11=S3
+ 99.41% 4070 0=F6 10=F59 11=S7
+ 99.41% 4070 0=F6 10=F57 11=S5
+ 99.41% 4070 0=F6 10=F53 11=S9
+ 99.41% 4070 0=F6 10=F53 11=S1
+
+--- Round 3: every 4-op table (codes 00,01,10,11) over 19 ops, 127 steps, L<=13. Top 20 of 3,876:
+    [a b c d] = distinct screens at 1,2,3,4 bits (ceilings 2 4 8 16; 16 is unreachable, see README)
+ 99.87% 16361 [2 4 8 14] 00=F4 01=F16 10=S9 11=C1
+ 99.87% 16360 [2 4 8 14] 00=F12 01=F24 10=S9 11=C1
+ 99.85% 16358 [2 4 8 14] 00=F4 01=F24 10=S9 11=C1
+ 99.82% 16353 [2 4 8 14] 00=F12 01=F16 10=S9 11=C1
+ 99.80% 16350 [2 4 8 14] 00=F8 01=F12 10=S1 11=C1
+ 99.80% 16349 [2 4 8 14] 00=F4 01=F8 10=S9 11=C3
+ 99.79% 16348 [2 4 8 12] 00=F5 01=F16 10=S9 11=C3
+ 99.79% 16348 [2 4 8 12] 00=F3 01=F24 10=S9 11=C1
+ 99.79% 16347 [2 4 8 14] 00=F8 01=F16 10=S3 11=C1
+ 99.79% 16347 [2 4 8 12] 00=F1 01=F24 10=S9 11=C3
+ 99.79% 16347 [2 4 8 12] 00=F1 01=F24 10=S3 11=C3
+ 99.78% 16346 [2 4 8 14] 00=F8 01=F16 10=S3 11=C3
+ 99.78% 16346 [2 4 8 12] 00=F9 01=F24 10=S1 11=C3
+ 99.77% 16345 [2 4 8 12] 00=F7 01=F12 10=S9 11=C1
+ 99.77% 16345 [2 4 8 12] 00=F5 01=F24 10=S3 11=C3
+ 99.77% 16344 [2 4 8 12] 00=F7 01=F24 10=S1 11=C1
+ 99.76% 16343 [2 4 8 12] 00=F7 01=F8 10=S9 11=C3
+ 99.76% 16343 [2 4 8 12] 00=F7 01=F12 10=S1 11=C1
+ 99.76% 16343 [2 4 8 12] 00=F1 01=F16 10=S3 11=C3
+ 99.75% 16341 [2 4 8 14] 00=F8 01=F16 10=S1 11=C3
+
+--- Round 4: odd step counts 65..255 for the 15 leading tables, L<=16. Top 10 (distinct screens of 131,070 programs):
+131053 75 00=F4 01=F8 10=S3 11=C3
+131045 73 00=F4 01=F8 10=S3 11=C3
+131039 175 00=F4 01=F8 10=S3 11=C3
+131033 245 00=F4 01=F8 10=S3 11=C3
+131001 177 00=F4 01=F8 10=S3 11=C3
+130985 77 00=F4 01=F8 10=S3 11=C3
+130981 215 00=F4 01=F8 10=S3 11=C3
+130979 205 00=F4 01=F8 10=S3 11=C3
+130972 147 00=F4 01=F8 10=S3 11=C3
+130966 203 00=F4 01=F8 10=S3 11=C3
+
+--- Round 5: step count check for the winner on L<=22
+steps= 73    TOTAL 8319109 / 8388606  99.172%
+steps= 75    TOTAL 8309195 / 8388606  99.053%
+steps=127    TOTAL 8318667 / 8388606  99.166%
+steps=128    TOTAL 8313903 / 8388606  99.109%
+steps=175    TOTAL 8036456 / 8388606  95.802%
+steps=245    TOTAL 8280558 / 8388606  98.712%
+
+Chosen: 00=F4 01=F8 10=S3 11=C3, 127 steps.

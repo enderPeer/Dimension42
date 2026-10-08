@@ -1,0 +1,149 @@
+{
+  "schema": "nano6-formula-verification-v1",
+  "input_definition": {
+    "a": 6,
+    "b": 7
+  },
+  "answer_definition": "first OUT within 64 instructions",
+  "step_budget": 64,
+  "verification_reference": "explorer/demo.py run; original NANO, 16-byte shared memory",
+  "rarity_scope": "Selected singleton 16-probe signatures in a fresh 8,388,608-program uniform full-space sample; not proven globally rarest",
+  "functions": [
+    {
+      "program": "EC6DCB22A2A0",
+      "name": "Memory-walking XOR/add mixer",
+      "formula_pseudocode": "x = 8; for v in [b, a, 160, 162, 34, 194]: x = ((x ^ v) + 2) & 255; return x",
+      "self_modification_explanation": "DEC M2 changes XOR B into XOR A, XOR 9, ... XOR 2. DEC M0 walks NOT C down to NOT 3. The code reads b, a and then its own instruction bytes. NOT M3 finally changes ADDI 2 (0x22) to OUT D (0xDD), emitting at instruction 64.",
+      "input_pairs_verified": 65536,
+      "formula_failures": 0,
+      "truth_table_fnv1a64": "47C243FEBD7E8325",
+      "truth_table_sha256": "dcdfd8a077c0ec6d5c46c8bf655bed2b6f3ad65fd1581e67d02a79949bcb3ae4",
+      "distinct_outputs": 256,
+      "examples": [
+        {
+          "a": 0,
+          "b": 0,
+          "output": 238,
+          "steps": 64
+        },
+        {
+          "a": 1,
+          "b": 0,
+          "output": 239,
+          "steps": 64
+        },
+        {
+          "a": 0,
+          "b": 1,
+          "output": 239,
+          "steps": 64
+        },
+        {
+          "a": 3,
+          "b": 5,
+          "output": 252,
+          "steps": 64
+        },
+        {
+          "a": 17,
+          "b": 250,
+          "output": 21,
+          "steps": 64
+        },
+        {
+          "a": 128,
+          "b": 128,
+          "output": 238,
+          "steps": 64
+        },
+        {
+          "a": 255,
+          "b": 255,
+          "output": 234,
+          "steps": 64
+        },
+        {
+          "a": 255,
+          "b": 0,
+          "output": 37,
+          "steps": 64
+        },
+        {
+          "a": 0,
+          "b": 255,
+          "output": 233,
+          "steps": 64
+        }
+      ],
+      "sample_occurrences_of_probe_signature": 1
+    },
+    {
+      "program": "A7A1CDBAE166",
+      "name": "Nine-round rotate-and-add transform",
+      "formula_pseudocode": "x = 0; for v in [a, a, a, (a-1)&255, (a-2)&255, 101, 225, 224, 224]: x = (ROL8(x,2) + v) & 255; return x",
+      "self_modification_explanation": "DEC M1 followed by NOT M1 creates an alternating ST F / DEC M0 instruction. DEC M0 successively changes the first instruction to decrement M6, M5 and M4; ADD 6 becomes ADD 5 then ADD 4. M4 changes from NOT 1 to NOT 0 and finally OUT F, yielding the saved accumulator at instruction 59. Input b is decremented but never contributes to the answer.",
+      "input_pairs_verified": 65536,
+      "formula_failures": 0,
+      "truth_table_fnv1a64": "576437B780E47525",
+      "truth_table_sha256": "a2f42fc2e434f99fd71e14b2fff16525cda415f6b48746215f3dceaab0192022",
+      "distinct_outputs": 182,
+      "examples": [
+        {
+          "a": 0,
+          "b": 0,
+          "output": 132,
+          "steps": 59
+        },
+        {
+          "a": 1,
+          "b": 0,
+          "output": 23,
+          "steps": 59
+        },
+        {
+          "a": 0,
+          "b": 1,
+          "output": 132,
+          "steps": 59
+        },
+        {
+          "a": 3,
+          "b": 5,
+          "output": 135,
+          "steps": 59
+        },
+        {
+          "a": 17,
+          "b": 250,
+          "output": 60,
+          "steps": 59
+        },
+        {
+          "a": 128,
+          "b": 128,
+          "output": 235,
+          "steps": 59
+        },
+        {
+          "a": 255,
+          "b": 255,
+          "output": 111,
+          "steps": 59
+        },
+        {
+          "a": 255,
+          "b": 0,
+          "output": 111,
+          "steps": 59
+        },
+        {
+          "a": 0,
+          "b": 255,
+          "output": 132,
+          "steps": 59
+        }
+      ],
+      "sample_occurrences_of_probe_signature": 1
+    }
+  ]
+}

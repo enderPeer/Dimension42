@@ -1,0 +1,38 @@
+{
+  "manifest_sha256": "9610a001cb508edea888aac902729a3bc459ebcfcad8deaa47f45f095255245d",
+  "programs": 281474976710656,
+  "chunks": 65536,
+  "classes": [
+    {
+      "class": "IDLE",
+      "programs": 20020350115580,
+      "percent": 7.112657170999626
+    },
+    {
+      "class": "HALT",
+      "programs": 28189039314704,
+      "percent": 10.0147585565594
+    },
+    {
+      "class": "ACTIVE",
+      "programs": 46312983147599,
+      "percent": 16.453676873453205
+    },
+    {
+      "class": "SELF_MOD",
+      "programs": 34549015032168,
+      "percent": 12.274275829386738
+    },
+    {
+      "class": "OUTPUT",
+      "programs": 38907051684953,
+      "percent": 13.82256147229306
+    },
+    {
+      "class": "DRAW",
+      "programs": 113496537415652,
+      "percent": 40.32207009730797
+    }
+  ],
+  "scope": "Complete zero-input 16-byte NANO map, 64 steps; mutually exclusive priority classes, not fine phenotypes."
+}

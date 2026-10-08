@@ -23,17 +23,16 @@ OUT.mkdir(parents=True, exist_ok=True)
 LOG = OUT / "chunks.jsonl"
 SINK = "NANO_SINK='ssh -i ~/.ssh/d42_transfer -o BatchMode=yes -o IdentitiesOnly=yes ender@192.168.178.188'"
 # node, label, command, where the data lands
-GPUS = [
+GPUS = [   # falke64 is offline since 2026-10-06 21:09 - every node now stores what it computes itself
+    ("adler40",  "RTX 4090",    f"./nano_cuda serve {L} 0 10",           "adler40"),
     ("adler40",  "RTX 4080",    f"./nano_cuda serve {L} 1 10",           "adler40"),
-    ("knecht24", "RTX 3060 #0", f"{SINK} ./nano_cuda serve {L} 0 6",     "falke64"),
-    ("knecht24", "RTX 3060 #1", f"{SINK} ./nano_cuda serve {L} 1 6",     "falke64"),
-    ("knecht24", "RTX 3060 #2", f"{SINK} ./nano_cuda serve {L} 2 6",     "falke64"),
-    ("specht32", "RX 9070 XT",  f"{SINK} ./nano_vk serve {L} 1 6",       "falke64"),
-    ("specht32", "RX 9060 XT",  f"{SINK} ./nano_vk serve {L} 0 5",       "falke64"),
-    ("falke64",  "R9700 #0",    f"./nano_vk serve {L} 0 6",              "falke64"),
-    ("falke64",  "R9700 #1",    f"./nano_vk serve {L} 1 6",              "falke64"),
+    ("knecht24", "RTX 3060 #0", f"./nano_cuda serve {L} 0 6",            "knecht24"),
+    ("knecht24", "RTX 3060 #1", f"./nano_cuda serve {L} 1 6",            "knecht24"),
+    ("knecht24", "RTX 3060 #2", f"./nano_cuda serve {L} 2 6",            "knecht24"),
+    ("specht32", "RX 9070 XT",  f"./nano_vk serve {L} 1 6",              "specht32"),
+    ("specht32", "RX 9060 XT",  f"./nano_vk serve {L} 0 5",              "specht32"),
 ]
-RESERVE_GB = {"adler40": 230, "falke64": 450}       # keep at least 25 % of each storage disk free
+RESERVE_GB = {"adler40": 183, "knecht24": 45, "specht32": 91}   # keep at least 20 % of each storage disk free
 full = {n: False for n in RESERVE_GB}
 free_gb = {n: 0 for n in RESERVE_GB}
 stop = threading.Event()
@@ -99,12 +98,13 @@ def worker(node, label, cmd, dest):
                 rate = (n - start_done) * CH / el
                 eta = (NCH - n) * CH / rate / 3600 if rate else 0
                 print(f"  {n:6d}/{NCH} chunks ({100 * n / NCH:5.1f}%)  {rate / 1e9:5.2f} G programs/s  "
-                      f"ETA {eta:4.1f} h  free: falke {free_gb['falke64']} GB, adler {free_gb['adler40']} GB", flush=True)
+                      f"ETA {eta:4.1f} h  free GB: " + ", ".join(f"{k} {v}" for k, v in free_gb.items()), flush=True)
     proc.stdin.close()
     proc.wait()
 
 
-ssh("adler40", "mkdir -p ~/dimension42-explorer/L6")
+for node in RESERVE_GB:
+    ssh(node, "cd ~/dimension42-explorer && mkdir -p $(printf 'L6/%02x ' $(seq 0 255))")
 print(f"6-byte map: {NCH - len(done):,} of {NCH:,} chunks to do ({len(done):,} already done)", flush=True)
 g = threading.Thread(target=guard, daemon=True)
 g.start()

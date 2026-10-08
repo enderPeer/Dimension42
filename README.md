@@ -184,9 +184,15 @@ See [OS instructions, opcodes, and hardware limitations](docs/OS.md). Real clust
 
 ## Research notes and data
 
+- [Experimental NANO-256: 256 bytes of memory and 512 steps](docs/NANO256.md) — separate CPU interpreters; existing maps and models keep the original rules.
 - [Experiments and verification history](explorer/README.md)
 - [Publication snapshot and checksums](docs/snapshots/2026-10-06-publication.json)
 - [Small verified trace dataset](datasets/nano-adders-sample/README.md) · [Hugging Face download](https://huggingface.co/datasets/Egoplayer/Dimension42-nano-traces)
 - [Community sharing material](docs/community/README.md)
 
-Cluster scripts contain the original SSH hostnames and paths. These quickstarts use local tools; configure your own hosts before using orchestration scripts. Six-byte mapping and later training are ongoing. Committed logs are snapshots, not live status.
+Cluster scripts contain the original SSH hostnames and paths. These quickstarts use local tools; configure your own hosts before using orchestration scripts. The six-byte class map (all 2^48 programs) was completed on 2026-10-07; its 794 GB of class data stay on the cluster and only sampled phenotype and rarity probes have been run on it so far (see explorer/README.md). Committed logs are snapshots, not live status.
+
+## Related projects
+
+- [Universe-1](https://github.com/enderPeer/Universe-1/tree/claude/charming-rubin-pi8nzs): exact function maps of parametric 4-bit machines (37 instruction sets at step 256, every step of every program for two of them, a self-modifying layout with the first 4-byte self-copiers, artificial-life worlds on the mapped functions). Its `docs/09_three_projects.md` compares the three projects and ranks the open experiments. Universe-1 adopted NANO's cross-device validation discipline and per-chunk program accounting, and its exp06b copier criterion follows the NANO copier search.
+- [Universe-7](https://github.com/enderPeer/universe7): the opposite method, the drawing law itself chosen by exhaustive search so that almost every short program is a distinct picture; 8.4 million programs up to 22 bits.

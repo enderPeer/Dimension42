@@ -92,6 +92,30 @@ step 1 = answers 2+2+2 = 6, step 2 = correct on 32 triples, step 3 = correct on 
   them were already in the training data under a different task. The test therefore measures whether the AI
   picks the right programs for an unseen task, not whether it invents new ones.
 
+## Map of all 6-byte programs (`cluster6.py`)
+
+All 281,474,976,710,656 programs (2^48), the class of every one stored zstd-compressed on the cluster:
+65,536 files `~/dimension42-explorer/L6/xx/yy.zst` (chunk = programs `xx yy 00 00 00 00` … `xx yy FF FF FF FF`),
+794 GB in total. Index of which file lives on which node, with counts and hashes: `results/L6/chunks.jsonl`.
+
+| node | chunks | size |
+|---|---:|---:|
+| adler40 | 34,003 | 428 GB |
+| falke64 | 13,860 | 177 GB |
+| specht32 | 10,942 | 120 GB |
+| knecht24 | 6,731 | 69 GB |
+
+Classes: DRAW 40.3 %, ACTIVE 16.5 %, OUTPUT 13.8 %, SELF-MOD 12.3 %, HALT 10.0 %, IDLE 7.1 %.
+
+- Run: 2026-10-06 19:13 to 2026-10-07 10:47, in two parts. falke64 dropped off the network at 21:09:34
+  (its Intel I226-V network chip lost its PCIe link: `igc … PCIe link lost, device now detached`). Falke kept
+  running without network until it was restarted the next morning; the rest was computed by 7 GPUs.
+- Checks: all 13,860 chunks on falke64 decompressed and recounted (0 errors). 100 random chunks each on the
+  other nodes recounted (300/300). 12 random chunks recomputed on the other GPU family (NVIDIA ↔ AMD): all
+  identical. File count = log on every node. 7 half-written files from the failure were removed (their chunks
+  were recomputed elsewhere).
+- Peak temperatures: GPU hotspot 97 °C (RX 9060 XT, limit 110 °C), NVIDIA up to 74 °C, no thermal throttling.
+
 ## Tools
 
 Runs **every** NANO program of L bytes (the CPU from Dimension42 v0.2, PC wrapping at L) for 64 steps
@@ -162,5 +186,5 @@ Real full-cluster run of all 4-byte programs: 369 ms compute (11.6 G/s, because 
 
 Each extra byte multiplies the search space by 256. This timing table is historical: it predates the
 completed five-byte run. Current GPU explorers accept lengths 1–8; the five-byte map's measured wall time
-is in `results/L5/manifest.json`. Six-byte mapping is in progress. See the root README for the current
+is in `results/L5/manifest.json`. Six-byte mapping finished on 2026-10-07 (65,536 chunks, 794 GB on the cluster, about 54 GPU-hours; classes DRAW 40.3 %, ACTIVE 16.5 %, OUTPUT 13.8 %, SELF-MOD 12.3 %, HALT 10.0 %, IDLE 7.1 %); only sampled phenotype and rarity probes (8.4 M and 20 M programs) have used it, an exhaustive six-byte I/O catalog is open. See the root README for the current
 quickstart and the distinction between behavior classification and verified input/output functions.

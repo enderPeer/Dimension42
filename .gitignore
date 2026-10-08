@@ -3,6 +3,7 @@ __pycache__/
 .venv/
 *.spv
 /explorer/nano_cpu
+/explorer/nano256_cpu
 /explorer/nano_search3
 /explorer/nano_search3_cpu
 /explorer/nano_search3_vk

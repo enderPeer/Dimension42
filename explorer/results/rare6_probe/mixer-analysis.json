@@ -1,0 +1,786 @@
+{
+  "program": "6A92C4BF507D",
+  "isa": "original NANO, 16 bytes, 64 steps",
+  "inputs": {
+    "a": 6,
+    "b": 7
+  },
+  "answer": "first OUT",
+  "formula": "ror8(a,2) XOR ror8(b,1) XOR 0xAF",
+  "pairs_checked": 65536,
+  "formula_failures": 0,
+  "output_table_sha256": "943414a8e4db05d92ac8b25dccfd3443bbf1f64ffbccc478977b0301f3ff06b2",
+  "sampled_programs": 20000000,
+  "sample_occurrences_of_16_probe_signature": 1,
+  "five_byte_catalog_probe_signature_present": false,
+  "scope": "Seeded sample from completed chunks stored on reachable nodes. Rarity within this sample, not the full six-byte space. Five-byte catalog uses a=M5,b=M6; this six-byte probe uses a=M6,b=M7.",
+  "map_record": {
+    "chunk": 27282,
+    "file": "L6/6a/92.zst",
+    "node": "adler40",
+    "device": "RTX 4080",
+    "hashsum": 9223343905296806759,
+    "counts": [
+      4106775,
+      2075993,
+      7922845,
+      2187474488,
+      576055241,
+      1517331954
+    ],
+    "secs": 2.271217
+  },
+  "saved_class_verified": true,
+  "examples": [
+    {
+      "a": 0,
+      "b": 0,
+      "output": 175,
+      "steps": 58
+    },
+    {
+      "a": 1,
+      "b": 0,
+      "output": 239,
+      "steps": 58
+    },
+    {
+      "a": 0,
+      "b": 1,
+      "output": 47,
+      "steps": 58
+    },
+    {
+      "a": 3,
+      "b": 5,
+      "output": 237,
+      "steps": 58
+    },
+    {
+      "a": 255,
+      "b": 255,
+      "output": 175,
+      "steps": 58
+    }
+  ],
+  "trace_a3_b5": [
+    {
+      "step": 1,
+      "pc": 0,
+      "byte": "6A",
+      "instruction": "ADD A",
+      "a_before": 0,
+      "a_after": 0,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 2,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 0,
+      "a_after": 0,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 196,
+          "after": 197
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 3,
+      "pc": 2,
+      "byte": "C5",
+      "instruction": "XOR 5",
+      "a_before": 0,
+      "a_after": 125,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 4,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 125,
+      "a_after": 190,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 5,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 190,
+      "a_after": 190,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 106,
+          "after": 190
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 6,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 190,
+      "a_after": 190,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 7,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 190,
+      "a_after": 190,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 197,
+          "after": 198
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 8,
+      "pc": 2,
+      "byte": "C6",
+      "instruction": "XOR 6",
+      "a_before": 190,
+      "a_after": 189,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 9,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 189,
+      "a_after": 222,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 10,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 222,
+      "a_after": 222,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 190,
+          "after": 222
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 11,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 222,
+      "a_after": 222,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 12,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 222,
+      "a_after": 222,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 198,
+          "after": 199
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 13,
+      "pc": 2,
+      "byte": "C7",
+      "instruction": "XOR 7",
+      "a_before": 222,
+      "a_after": 219,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 14,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 219,
+      "a_after": 237,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 15,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 237,
+      "a_after": 237,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 222,
+          "after": 237
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 16,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 237,
+      "a_after": 237,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 17,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 237,
+      "a_after": 237,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 199,
+          "after": 200
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 18,
+      "pc": 2,
+      "byte": "C8",
+      "instruction": "XOR 8",
+      "a_before": 237,
+      "a_after": 237,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 19,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 237,
+      "a_after": 246,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 20,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 246,
+      "a_after": 246,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 237,
+          "after": 246
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 21,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 246,
+      "a_after": 246,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 22,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 246,
+      "a_after": 246,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 200,
+          "after": 201
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 23,
+      "pc": 2,
+      "byte": "C9",
+      "instruction": "XOR 9",
+      "a_before": 246,
+      "a_after": 246,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 24,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 246,
+      "a_after": 123,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 25,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 123,
+      "a_after": 123,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 246,
+          "after": 123
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 26,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 123,
+      "a_after": 123,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 27,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 123,
+      "a_after": 123,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 201,
+          "after": 202
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 28,
+      "pc": 2,
+      "byte": "CA",
+      "instruction": "XOR A",
+      "a_before": 123,
+      "a_after": 123,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 29,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 123,
+      "a_after": 189,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 30,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 189,
+      "a_after": 189,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 123,
+          "after": 189
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 31,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 189,
+      "a_after": 189,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 32,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 189,
+      "a_after": 189,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 202,
+          "after": 203
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 33,
+      "pc": 2,
+      "byte": "CB",
+      "instruction": "XOR B",
+      "a_before": 189,
+      "a_after": 189,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 34,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 189,
+      "a_after": 222,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 35,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 222,
+      "a_after": 222,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 189,
+          "after": 222
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 36,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 222,
+      "a_after": 222,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 37,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 222,
+      "a_after": 222,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 203,
+          "after": 204
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 38,
+      "pc": 2,
+      "byte": "CC",
+      "instruction": "XOR C",
+      "a_before": 222,
+      "a_after": 222,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 39,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 222,
+      "a_after": 111,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 40,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 111,
+      "a_after": 111,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 222,
+          "after": 111
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 41,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 111,
+      "a_after": 111,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 42,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 111,
+      "a_after": 111,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 204,
+          "after": 205
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 43,
+      "pc": 2,
+      "byte": "CD",
+      "instruction": "XOR D",
+      "a_before": 111,
+      "a_after": 111,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 44,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 111,
+      "a_after": 183,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 45,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 183,
+      "a_after": 183,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 111,
+          "after": 183
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 46,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 183,
+      "a_after": 183,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 47,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 183,
+      "a_after": 183,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 205,
+          "after": 206
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 48,
+      "pc": 2,
+      "byte": "CE",
+      "instruction": "XOR E",
+      "a_before": 183,
+      "a_after": 183,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 49,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 183,
+      "a_after": 219,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 50,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 219,
+      "a_after": 219,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 183,
+          "after": 219
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 51,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 219,
+      "a_after": 219,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 52,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 219,
+      "a_after": 219,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 206,
+          "after": 207
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 53,
+      "pc": 2,
+      "byte": "CF",
+      "instruction": "XOR F",
+      "a_before": 219,
+      "a_after": 219,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 54,
+      "pc": 3,
+      "byte": "BF",
+      "instruction": "ROL F",
+      "a_before": 219,
+      "a_after": 237,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 55,
+      "pc": 4,
+      "byte": "50",
+      "instruction": "ST 0",
+      "a_before": 237,
+      "a_after": 237,
+      "writes": [
+        {
+          "cell": 0,
+          "before": 219,
+          "after": 237
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 56,
+      "pc": 5,
+      "byte": "7D",
+      "instruction": "JMP D",
+      "a_before": 237,
+      "a_after": 237,
+      "writes": [],
+      "output": null
+    },
+    {
+      "step": 57,
+      "pc": 1,
+      "byte": "92",
+      "instruction": "INC 2",
+      "a_before": 237,
+      "a_after": 237,
+      "writes": [
+        {
+          "cell": 2,
+          "before": 207,
+          "after": 208
+        }
+      ],
+      "output": null
+    },
+    {
+      "step": 58,
+      "pc": 2,
+      "byte": "D0",
+      "instruction": "OUT 0",
+      "a_before": 237,
+      "a_after": 237,
+      "writes": [],
+      "output": 237
+    }
+  ]
+}

@@ -1,0 +1,3745 @@
+{
+  "program": "EC6DCB22A2A0",
+  "disassembly": [
+    "NOT C",
+    "ADD D",
+    "XOR B",
+    "ADDI 2",
+    "DEC 2",
+    "DEC 0"
+  ],
+  "function_definition": "First OUT at or before 64 steps; a=M6, b=M7, other non-code memory zero, A=0.",
+  "full_input_pairs": 65536,
+  "missing_answers": 0,
+  "depends_a": true,
+  "depends_b": true,
+  "distinct_outputs": 256,
+  "most_common_output_count": 256,
+  "a_0_to_15_b_0": [
+    238,
+    239,
+    248,
+    249,
+    242,
+    243,
+    252,
+    253,
+    230,
+    231,
+    240,
+    241,
+    234,
+    235,
+    244,
+    245
+  ],
+  "a_0_b_0_to_15": [
+    238,
+    239,
+    252,
+    253,
+    242,
+    243,
+    0,
+    1,
+    230,
+    231,
+    244,
+    245,
+    234,
+    235,
+    248,
+    249
+  ],
+  "truth_table_file": "ec6dcb22a2a0-truth.bin",
+  "truth_table_order": "a-major, b-minor; one byte per pair",
+  "truth_table_sha256": "dcdfd8a077c0ec6d5c46c8bf655bed2b6f3ad65fd1581e67d02a79949bcb3ae4",
+  "truth_table_fnv1a64": "47c243febd7e8325",
+  "sensitive_bits": 48,
+  "neutral_one_bit_neighbors": [],
+  "mutation_witnesses": [
+    {
+      "bit": 0,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 1,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 2,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 3,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 4,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 5,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 6,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 7,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 8,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 9,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 0
+    },
+    {
+      "bit": 10,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 0
+    },
+    {
+      "bit": 11,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 12,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 0
+    },
+    {
+      "bit": 13,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 14,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 0
+    },
+    {
+      "bit": 15,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 0
+    },
+    {
+      "bit": 16,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 255
+    },
+    {
+      "bit": 17,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 4
+    },
+    {
+      "bit": 18,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 255
+    },
+    {
+      "bit": 19,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 160
+    },
+    {
+      "bit": 20,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 21,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 22,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 23,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 24,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 137
+    },
+    {
+      "bit": 25,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 125
+    },
+    {
+      "bit": 26,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 1
+    },
+    {
+      "bit": 27,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 114
+    },
+    {
+      "bit": 28,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 0
+    },
+    {
+      "bit": 29,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 16
+    },
+    {
+      "bit": 30,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 31,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 68
+    },
+    {
+      "bit": 32,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 236
+    },
+    {
+      "bit": 33,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 228
+    },
+    {
+      "bit": 34,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 239
+    },
+    {
+      "bit": 35,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 111
+    },
+    {
+      "bit": 36,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 37,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 196
+    },
+    {
+      "bit": 38,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 116
+    },
+    {
+      "bit": 39,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 3
+    },
+    {
+      "bit": 40,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 41,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 42,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 1
+    },
+    {
+      "bit": 43,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": 2
+    },
+    {
+      "bit": 44,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 45,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 46,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    },
+    {
+      "bit": 47,
+      "a": 3,
+      "b": 5,
+      "original": 252,
+      "mutated": null
+    }
+  ],
+  "example_traces": [
+    {
+      "a": 0,
+      "b": 0,
+      "answer": 238,
+      "steps": 64,
+      "trace": [
+        {
+          "step": 1,
+          "pc": 0,
+          "byte": "EC",
+          "instruction": "NOT C",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [
+            {
+              "cell": 12,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 2,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 3,
+          "pc": 2,
+          "byte": "CB",
+          "instruction": "XOR B",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 4,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 0,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 5,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 203,
+              "after": 202
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 6,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 236,
+              "after": 235
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 7,
+          "pc": 0,
+          "byte": "EB",
+          "instruction": "NOT B",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 11,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 8,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 9,
+          "pc": 2,
+          "byte": "CA",
+          "instruction": "XOR A",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 10,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 2,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 11,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 202,
+              "after": 201
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 12,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 235,
+              "after": 234
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 13,
+          "pc": 0,
+          "byte": "EA",
+          "instruction": "NOT A",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 10,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 14,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 15,
+          "pc": 2,
+          "byte": "C9",
+          "instruction": "XOR 9",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 16,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 4,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 17,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 201,
+              "after": 200
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 18,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 234,
+              "after": 233
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 19,
+          "pc": 0,
+          "byte": "E9",
+          "instruction": "NOT 9",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 9,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 20,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 21,
+          "pc": 2,
+          "byte": "C8",
+          "instruction": "XOR 8",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 22,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 6,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 23,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 200,
+              "after": 199
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 24,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 233,
+              "after": 232
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 25,
+          "pc": 0,
+          "byte": "E8",
+          "instruction": "NOT 8",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 8,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 26,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 27,
+          "pc": 2,
+          "byte": "C7",
+          "instruction": "XOR 7",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 28,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 8,
+          "a_after": 10,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 29,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 199,
+              "after": 198
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 30,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 232,
+              "after": 231
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 31,
+          "pc": 0,
+          "byte": "E7",
+          "instruction": "NOT 7",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [
+            {
+              "cell": 7,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 32,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 33,
+          "pc": 2,
+          "byte": "C6",
+          "instruction": "XOR 6",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 34,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 10,
+          "a_after": 12,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 35,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 12,
+          "a_after": 12,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 198,
+              "after": 197
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 36,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 12,
+          "a_after": 12,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 231,
+              "after": 230
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 37,
+          "pc": 0,
+          "byte": "E6",
+          "instruction": "NOT 6",
+          "a_before": 12,
+          "a_after": 12,
+          "writes": [
+            {
+              "cell": 6,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 38,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 12,
+          "a_after": 12,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 39,
+          "pc": 2,
+          "byte": "C5",
+          "instruction": "XOR 5",
+          "a_before": 12,
+          "a_after": 172,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 40,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 172,
+          "a_after": 174,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 41,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 174,
+          "a_after": 174,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 197,
+              "after": 196
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 42,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 174,
+          "a_after": 174,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 230,
+              "after": 229
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 43,
+          "pc": 0,
+          "byte": "E5",
+          "instruction": "NOT 5",
+          "a_before": 174,
+          "a_after": 174,
+          "writes": [
+            {
+              "cell": 5,
+              "before": 160,
+              "after": 95
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 44,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 174,
+          "a_after": 174,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 45,
+          "pc": 2,
+          "byte": "C4",
+          "instruction": "XOR 4",
+          "a_before": 174,
+          "a_after": 12,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 46,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 12,
+          "a_after": 14,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 47,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 14,
+          "a_after": 14,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 196,
+              "after": 195
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 48,
+          "pc": 5,
+          "byte": "5F",
+          "instruction": "ST F",
+          "a_before": 14,
+          "a_after": 14,
+          "writes": [
+            {
+              "cell": 15,
+              "before": 0,
+              "after": 14
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 49,
+          "pc": 0,
+          "byte": "E5",
+          "instruction": "NOT 5",
+          "a_before": 14,
+          "a_after": 14,
+          "writes": [
+            {
+              "cell": 5,
+              "before": 95,
+              "after": 160
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 50,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 14,
+          "a_after": 14,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 51,
+          "pc": 2,
+          "byte": "C3",
+          "instruction": "XOR 3",
+          "a_before": 14,
+          "a_after": 44,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 52,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 44,
+          "a_after": 46,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 53,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 46,
+          "a_after": 46,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 195,
+              "after": 194
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 54,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 46,
+          "a_after": 46,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 229,
+              "after": 228
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 55,
+          "pc": 0,
+          "byte": "E4",
+          "instruction": "NOT 4",
+          "a_before": 46,
+          "a_after": 46,
+          "writes": [
+            {
+              "cell": 4,
+              "before": 162,
+              "after": 93
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 56,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 46,
+          "a_after": 46,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 57,
+          "pc": 2,
+          "byte": "C2",
+          "instruction": "XOR 2",
+          "a_before": 46,
+          "a_after": 236,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 58,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 236,
+          "a_after": 238,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 59,
+          "pc": 4,
+          "byte": "5D",
+          "instruction": "ST D",
+          "a_before": 238,
+          "a_after": 238,
+          "writes": [
+            {
+              "cell": 13,
+              "before": 0,
+              "after": 238
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 60,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 238,
+          "a_after": 238,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 228,
+              "after": 227
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 61,
+          "pc": 0,
+          "byte": "E3",
+          "instruction": "NOT 3",
+          "a_before": 238,
+          "a_after": 238,
+          "writes": [
+            {
+              "cell": 3,
+              "before": 34,
+              "after": 221
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 62,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 238,
+          "a_after": 220,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 63,
+          "pc": 2,
+          "byte": "C2",
+          "instruction": "XOR 2",
+          "a_before": 220,
+          "a_after": 30,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 64,
+          "pc": 3,
+          "byte": "DD",
+          "instruction": "OUT D",
+          "a_before": 30,
+          "a_after": 30,
+          "writes": [],
+          "output": 238
+        }
+      ]
+    },
+    {
+      "a": 3,
+      "b": 5,
+      "answer": 252,
+      "steps": 64,
+      "trace": [
+        {
+          "step": 1,
+          "pc": 0,
+          "byte": "EC",
+          "instruction": "NOT C",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [
+            {
+              "cell": 12,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 2,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 3,
+          "pc": 2,
+          "byte": "CB",
+          "instruction": "XOR B",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 4,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 0,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 5,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 203,
+              "after": 202
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 6,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 236,
+              "after": 235
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 7,
+          "pc": 0,
+          "byte": "EB",
+          "instruction": "NOT B",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 11,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 8,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 9,
+          "pc": 2,
+          "byte": "CA",
+          "instruction": "XOR A",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 10,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 2,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 11,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 202,
+              "after": 201
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 12,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 235,
+              "after": 234
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 13,
+          "pc": 0,
+          "byte": "EA",
+          "instruction": "NOT A",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 10,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 14,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 15,
+          "pc": 2,
+          "byte": "C9",
+          "instruction": "XOR 9",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 16,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 4,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 17,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 201,
+              "after": 200
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 18,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 234,
+              "after": 233
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 19,
+          "pc": 0,
+          "byte": "E9",
+          "instruction": "NOT 9",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 9,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 20,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 21,
+          "pc": 2,
+          "byte": "C8",
+          "instruction": "XOR 8",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 22,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 6,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 23,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 200,
+              "after": 199
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 24,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 233,
+              "after": 232
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 25,
+          "pc": 0,
+          "byte": "E8",
+          "instruction": "NOT 8",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 8,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 26,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 27,
+          "pc": 2,
+          "byte": "C7",
+          "instruction": "XOR 7",
+          "a_before": 8,
+          "a_after": 13,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 28,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 13,
+          "a_after": 15,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 29,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 15,
+          "a_after": 15,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 199,
+              "after": 198
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 30,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 15,
+          "a_after": 15,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 232,
+              "after": 231
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 31,
+          "pc": 0,
+          "byte": "E7",
+          "instruction": "NOT 7",
+          "a_before": 15,
+          "a_after": 15,
+          "writes": [
+            {
+              "cell": 7,
+              "before": 5,
+              "after": 250
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 32,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 15,
+          "a_after": 15,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 33,
+          "pc": 2,
+          "byte": "C6",
+          "instruction": "XOR 6",
+          "a_before": 15,
+          "a_after": 12,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 34,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 12,
+          "a_after": 14,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 35,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 14,
+          "a_after": 14,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 198,
+              "after": 197
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 36,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 14,
+          "a_after": 14,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 231,
+              "after": 230
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 37,
+          "pc": 0,
+          "byte": "E6",
+          "instruction": "NOT 6",
+          "a_before": 14,
+          "a_after": 14,
+          "writes": [
+            {
+              "cell": 6,
+              "before": 3,
+              "after": 252
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 38,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 14,
+          "a_after": 14,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 39,
+          "pc": 2,
+          "byte": "C5",
+          "instruction": "XOR 5",
+          "a_before": 14,
+          "a_after": 174,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 40,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 174,
+          "a_after": 176,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 41,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 176,
+          "a_after": 176,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 197,
+              "after": 196
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 42,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 176,
+          "a_after": 176,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 230,
+              "after": 229
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 43,
+          "pc": 0,
+          "byte": "E5",
+          "instruction": "NOT 5",
+          "a_before": 176,
+          "a_after": 176,
+          "writes": [
+            {
+              "cell": 5,
+              "before": 160,
+              "after": 95
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 44,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 176,
+          "a_after": 176,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 45,
+          "pc": 2,
+          "byte": "C4",
+          "instruction": "XOR 4",
+          "a_before": 176,
+          "a_after": 18,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 46,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 18,
+          "a_after": 20,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 47,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 20,
+          "a_after": 20,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 196,
+              "after": 195
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 48,
+          "pc": 5,
+          "byte": "5F",
+          "instruction": "ST F",
+          "a_before": 20,
+          "a_after": 20,
+          "writes": [
+            {
+              "cell": 15,
+              "before": 0,
+              "after": 20
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 49,
+          "pc": 0,
+          "byte": "E5",
+          "instruction": "NOT 5",
+          "a_before": 20,
+          "a_after": 20,
+          "writes": [
+            {
+              "cell": 5,
+              "before": 95,
+              "after": 160
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 50,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 20,
+          "a_after": 20,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 51,
+          "pc": 2,
+          "byte": "C3",
+          "instruction": "XOR 3",
+          "a_before": 20,
+          "a_after": 54,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 52,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 54,
+          "a_after": 56,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 53,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 56,
+          "a_after": 56,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 195,
+              "after": 194
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 54,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 56,
+          "a_after": 56,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 229,
+              "after": 228
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 55,
+          "pc": 0,
+          "byte": "E4",
+          "instruction": "NOT 4",
+          "a_before": 56,
+          "a_after": 56,
+          "writes": [
+            {
+              "cell": 4,
+              "before": 162,
+              "after": 93
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 56,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 56,
+          "a_after": 56,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 57,
+          "pc": 2,
+          "byte": "C2",
+          "instruction": "XOR 2",
+          "a_before": 56,
+          "a_after": 250,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 58,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 250,
+          "a_after": 252,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 59,
+          "pc": 4,
+          "byte": "5D",
+          "instruction": "ST D",
+          "a_before": 252,
+          "a_after": 252,
+          "writes": [
+            {
+              "cell": 13,
+              "before": 0,
+              "after": 252
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 60,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 252,
+          "a_after": 252,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 228,
+              "after": 227
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 61,
+          "pc": 0,
+          "byte": "E3",
+          "instruction": "NOT 3",
+          "a_before": 252,
+          "a_after": 252,
+          "writes": [
+            {
+              "cell": 3,
+              "before": 34,
+              "after": 221
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 62,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 252,
+          "a_after": 248,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 63,
+          "pc": 2,
+          "byte": "C2",
+          "instruction": "XOR 2",
+          "a_before": 248,
+          "a_after": 58,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 64,
+          "pc": 3,
+          "byte": "DD",
+          "instruction": "OUT D",
+          "a_before": 58,
+          "a_after": 58,
+          "writes": [],
+          "output": 252
+        }
+      ]
+    },
+    {
+      "a": 17,
+      "b": 250,
+      "answer": 21,
+      "steps": 64,
+      "trace": [
+        {
+          "step": 1,
+          "pc": 0,
+          "byte": "EC",
+          "instruction": "NOT C",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [
+            {
+              "cell": 12,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 2,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 3,
+          "pc": 2,
+          "byte": "CB",
+          "instruction": "XOR B",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 4,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 0,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 5,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 203,
+              "after": 202
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 6,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 236,
+              "after": 235
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 7,
+          "pc": 0,
+          "byte": "EB",
+          "instruction": "NOT B",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 11,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 8,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 9,
+          "pc": 2,
+          "byte": "CA",
+          "instruction": "XOR A",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 10,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 2,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 11,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 202,
+              "after": 201
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 12,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 235,
+              "after": 234
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 13,
+          "pc": 0,
+          "byte": "EA",
+          "instruction": "NOT A",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 10,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 14,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 15,
+          "pc": 2,
+          "byte": "C9",
+          "instruction": "XOR 9",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 16,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 4,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 17,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 201,
+              "after": 200
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 18,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 234,
+              "after": 233
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 19,
+          "pc": 0,
+          "byte": "E9",
+          "instruction": "NOT 9",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 9,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 20,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 21,
+          "pc": 2,
+          "byte": "C8",
+          "instruction": "XOR 8",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 22,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 6,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 23,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 200,
+              "after": 199
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 24,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 233,
+              "after": 232
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 25,
+          "pc": 0,
+          "byte": "E8",
+          "instruction": "NOT 8",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 8,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 26,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 27,
+          "pc": 2,
+          "byte": "C7",
+          "instruction": "XOR 7",
+          "a_before": 8,
+          "a_after": 242,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 28,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 242,
+          "a_after": 244,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 29,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 244,
+          "a_after": 244,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 199,
+              "after": 198
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 30,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 244,
+          "a_after": 244,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 232,
+              "after": 231
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 31,
+          "pc": 0,
+          "byte": "E7",
+          "instruction": "NOT 7",
+          "a_before": 244,
+          "a_after": 244,
+          "writes": [
+            {
+              "cell": 7,
+              "before": 250,
+              "after": 5
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 32,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 244,
+          "a_after": 244,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 33,
+          "pc": 2,
+          "byte": "C6",
+          "instruction": "XOR 6",
+          "a_before": 244,
+          "a_after": 229,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 34,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 229,
+          "a_after": 231,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 35,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 231,
+          "a_after": 231,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 198,
+              "after": 197
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 36,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 231,
+          "a_after": 231,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 231,
+              "after": 230
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 37,
+          "pc": 0,
+          "byte": "E6",
+          "instruction": "NOT 6",
+          "a_before": 231,
+          "a_after": 231,
+          "writes": [
+            {
+              "cell": 6,
+              "before": 17,
+              "after": 238
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 38,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 231,
+          "a_after": 231,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 39,
+          "pc": 2,
+          "byte": "C5",
+          "instruction": "XOR 5",
+          "a_before": 231,
+          "a_after": 71,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 40,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 71,
+          "a_after": 73,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 41,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 73,
+          "a_after": 73,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 197,
+              "after": 196
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 42,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 73,
+          "a_after": 73,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 230,
+              "after": 229
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 43,
+          "pc": 0,
+          "byte": "E5",
+          "instruction": "NOT 5",
+          "a_before": 73,
+          "a_after": 73,
+          "writes": [
+            {
+              "cell": 5,
+              "before": 160,
+              "after": 95
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 44,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 73,
+          "a_after": 73,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 45,
+          "pc": 2,
+          "byte": "C4",
+          "instruction": "XOR 4",
+          "a_before": 73,
+          "a_after": 235,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 46,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 235,
+          "a_after": 237,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 47,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 237,
+          "a_after": 237,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 196,
+              "after": 195
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 48,
+          "pc": 5,
+          "byte": "5F",
+          "instruction": "ST F",
+          "a_before": 237,
+          "a_after": 237,
+          "writes": [
+            {
+              "cell": 15,
+              "before": 0,
+              "after": 237
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 49,
+          "pc": 0,
+          "byte": "E5",
+          "instruction": "NOT 5",
+          "a_before": 237,
+          "a_after": 237,
+          "writes": [
+            {
+              "cell": 5,
+              "before": 95,
+              "after": 160
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 50,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 237,
+          "a_after": 237,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 51,
+          "pc": 2,
+          "byte": "C3",
+          "instruction": "XOR 3",
+          "a_before": 237,
+          "a_after": 207,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 52,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 207,
+          "a_after": 209,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 53,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 209,
+          "a_after": 209,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 195,
+              "after": 194
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 54,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 209,
+          "a_after": 209,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 229,
+              "after": 228
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 55,
+          "pc": 0,
+          "byte": "E4",
+          "instruction": "NOT 4",
+          "a_before": 209,
+          "a_after": 209,
+          "writes": [
+            {
+              "cell": 4,
+              "before": 162,
+              "after": 93
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 56,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 209,
+          "a_after": 209,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 57,
+          "pc": 2,
+          "byte": "C2",
+          "instruction": "XOR 2",
+          "a_before": 209,
+          "a_after": 19,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 58,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 19,
+          "a_after": 21,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 59,
+          "pc": 4,
+          "byte": "5D",
+          "instruction": "ST D",
+          "a_before": 21,
+          "a_after": 21,
+          "writes": [
+            {
+              "cell": 13,
+              "before": 0,
+              "after": 21
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 60,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 21,
+          "a_after": 21,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 228,
+              "after": 227
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 61,
+          "pc": 0,
+          "byte": "E3",
+          "instruction": "NOT 3",
+          "a_before": 21,
+          "a_after": 21,
+          "writes": [
+            {
+              "cell": 3,
+              "before": 34,
+              "after": 221
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 62,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 21,
+          "a_after": 42,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 63,
+          "pc": 2,
+          "byte": "C2",
+          "instruction": "XOR 2",
+          "a_before": 42,
+          "a_after": 232,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 64,
+          "pc": 3,
+          "byte": "DD",
+          "instruction": "OUT D",
+          "a_before": 232,
+          "a_after": 232,
+          "writes": [],
+          "output": 21
+        }
+      ]
+    },
+    {
+      "a": 255,
+      "b": 255,
+      "answer": 234,
+      "steps": 64,
+      "trace": [
+        {
+          "step": 1,
+          "pc": 0,
+          "byte": "EC",
+          "instruction": "NOT C",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [
+            {
+              "cell": 12,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 2,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 3,
+          "pc": 2,
+          "byte": "CB",
+          "instruction": "XOR B",
+          "a_before": 0,
+          "a_after": 0,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 4,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 0,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 5,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 203,
+              "after": 202
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 6,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 236,
+              "after": 235
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 7,
+          "pc": 0,
+          "byte": "EB",
+          "instruction": "NOT B",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [
+            {
+              "cell": 11,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 8,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 9,
+          "pc": 2,
+          "byte": "CA",
+          "instruction": "XOR A",
+          "a_before": 2,
+          "a_after": 2,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 10,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 2,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 11,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 202,
+              "after": 201
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 12,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 235,
+              "after": 234
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 13,
+          "pc": 0,
+          "byte": "EA",
+          "instruction": "NOT A",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [
+            {
+              "cell": 10,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 14,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 15,
+          "pc": 2,
+          "byte": "C9",
+          "instruction": "XOR 9",
+          "a_before": 4,
+          "a_after": 4,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 16,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 4,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 17,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 201,
+              "after": 200
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 18,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 234,
+              "after": 233
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 19,
+          "pc": 0,
+          "byte": "E9",
+          "instruction": "NOT 9",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [
+            {
+              "cell": 9,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 20,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 21,
+          "pc": 2,
+          "byte": "C8",
+          "instruction": "XOR 8",
+          "a_before": 6,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 22,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 6,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 23,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 200,
+              "after": 199
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 24,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 233,
+              "after": 232
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 25,
+          "pc": 0,
+          "byte": "E8",
+          "instruction": "NOT 8",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 8,
+              "before": 0,
+              "after": 255
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 26,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 27,
+          "pc": 2,
+          "byte": "C7",
+          "instruction": "XOR 7",
+          "a_before": 8,
+          "a_after": 247,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 28,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 247,
+          "a_after": 249,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 29,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 249,
+          "a_after": 249,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 199,
+              "after": 198
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 30,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 249,
+          "a_after": 249,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 232,
+              "after": 231
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 31,
+          "pc": 0,
+          "byte": "E7",
+          "instruction": "NOT 7",
+          "a_before": 249,
+          "a_after": 249,
+          "writes": [
+            {
+              "cell": 7,
+              "before": 255,
+              "after": 0
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 32,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 249,
+          "a_after": 249,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 33,
+          "pc": 2,
+          "byte": "C6",
+          "instruction": "XOR 6",
+          "a_before": 249,
+          "a_after": 6,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 34,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 6,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 35,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 198,
+              "after": 197
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 36,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 231,
+              "after": 230
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 37,
+          "pc": 0,
+          "byte": "E6",
+          "instruction": "NOT 6",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [
+            {
+              "cell": 6,
+              "before": 255,
+              "after": 0
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 38,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 8,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 39,
+          "pc": 2,
+          "byte": "C5",
+          "instruction": "XOR 5",
+          "a_before": 8,
+          "a_after": 168,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 40,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 168,
+          "a_after": 170,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 41,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 170,
+          "a_after": 170,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 197,
+              "after": 196
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 42,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 170,
+          "a_after": 170,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 230,
+              "after": 229
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 43,
+          "pc": 0,
+          "byte": "E5",
+          "instruction": "NOT 5",
+          "a_before": 170,
+          "a_after": 170,
+          "writes": [
+            {
+              "cell": 5,
+              "before": 160,
+              "after": 95
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 44,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 170,
+          "a_after": 170,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 45,
+          "pc": 2,
+          "byte": "C4",
+          "instruction": "XOR 4",
+          "a_before": 170,
+          "a_after": 8,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 46,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 8,
+          "a_after": 10,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 47,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 196,
+              "after": 195
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 48,
+          "pc": 5,
+          "byte": "5F",
+          "instruction": "ST F",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [
+            {
+              "cell": 15,
+              "before": 0,
+              "after": 10
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 49,
+          "pc": 0,
+          "byte": "E5",
+          "instruction": "NOT 5",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [
+            {
+              "cell": 5,
+              "before": 95,
+              "after": 160
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 50,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 10,
+          "a_after": 10,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 51,
+          "pc": 2,
+          "byte": "C3",
+          "instruction": "XOR 3",
+          "a_before": 10,
+          "a_after": 40,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 52,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 40,
+          "a_after": 42,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 53,
+          "pc": 4,
+          "byte": "A2",
+          "instruction": "DEC 2",
+          "a_before": 42,
+          "a_after": 42,
+          "writes": [
+            {
+              "cell": 2,
+              "before": 195,
+              "after": 194
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 54,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 42,
+          "a_after": 42,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 229,
+              "after": 228
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 55,
+          "pc": 0,
+          "byte": "E4",
+          "instruction": "NOT 4",
+          "a_before": 42,
+          "a_after": 42,
+          "writes": [
+            {
+              "cell": 4,
+              "before": 162,
+              "after": 93
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 56,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 42,
+          "a_after": 42,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 57,
+          "pc": 2,
+          "byte": "C2",
+          "instruction": "XOR 2",
+          "a_before": 42,
+          "a_after": 232,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 58,
+          "pc": 3,
+          "byte": "22",
+          "instruction": "ADDI 2",
+          "a_before": 232,
+          "a_after": 234,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 59,
+          "pc": 4,
+          "byte": "5D",
+          "instruction": "ST D",
+          "a_before": 234,
+          "a_after": 234,
+          "writes": [
+            {
+              "cell": 13,
+              "before": 0,
+              "after": 234
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 60,
+          "pc": 5,
+          "byte": "A0",
+          "instruction": "DEC 0",
+          "a_before": 234,
+          "a_after": 234,
+          "writes": [
+            {
+              "cell": 0,
+              "before": 228,
+              "after": 227
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 61,
+          "pc": 0,
+          "byte": "E3",
+          "instruction": "NOT 3",
+          "a_before": 234,
+          "a_after": 234,
+          "writes": [
+            {
+              "cell": 3,
+              "before": 34,
+              "after": 221
+            }
+          ],
+          "output": null
+        },
+        {
+          "step": 62,
+          "pc": 1,
+          "byte": "6D",
+          "instruction": "ADD D",
+          "a_before": 234,
+          "a_after": 212,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 63,
+          "pc": 2,
+          "byte": "C2",
+          "instruction": "XOR 2",
+          "a_before": 212,
+          "a_after": 22,
+          "writes": [],
+          "output": null
+        },
+        {
+          "step": 64,
+          "pc": 3,
+          "byte": "DD",
+          "instruction": "OUT D",
+          "a_before": 22,
+          "a_after": 22,
+          "writes": [],
+          "output": 234
+        }
+      ]
+    }
+  ],
+  "original_zero_input_map": {
+    "class_code": 6,
+    "class": "DRAW",
+    "state_hash": 1389853506,
+    "node": "knecht24",
+    "file": "L6/ec/6d.zst",
+    "byte_offset": 3408044704
+  },
+  "verification_seconds": 0.668184
+}

@@ -1,0 +1,249 @@
+{
+  "checkpoint": "../pbe3.pt",
+  "device": "cuda:0",
+  "parameters": 38110979,
+  "target": "256x256 grid: Re(c)=-2+3*x/255, Im(c)=-1.5+3*y/255; z0=0; 64 iterations z=z*z+c; 255 if no |z|>2, else 0",
+  "instructions_to_model": "Only eight (x,y,output) examples per prompt, not natural language or formula tokens",
+  "nano_contract": "five code bytes; 16-byte memory; x=M5,y=M6; first OUT within 64 NANO instructions",
+  "inside_pixels": 11362,
+  "outside_pixels": 54174,
+  "constant_zero_pixel_accuracy": 0.826629638671875,
+  "constant_zero_balanced_accuracy": 0.5,
+  "sampled_programs": 384,
+  "unique_sampled_programs": 171,
+  "prompts": [
+    {
+      "examples": [
+        [
+          65,
+          10,
+          0
+        ],
+        [
+          207,
+          148,
+          0
+        ],
+        [
+          156,
+          148,
+          255
+        ],
+        [
+          76,
+          121,
+          255
+        ],
+        [
+          118,
+          220,
+          0
+        ],
+        [
+          166,
+          158,
+          255
+        ],
+        [
+          205,
+          114,
+          0
+        ],
+        [
+          144,
+          150,
+          255
+        ]
+      ],
+      "generated": 128,
+      "matches_all_eight": 0,
+      "best_examples_matched": 7
+    },
+    {
+      "examples": [
+        [
+          155,
+          150,
+          255
+        ],
+        [
+          14,
+          112,
+          0
+        ],
+        [
+          201,
+          117,
+          255
+        ],
+        [
+          173,
+          103,
+          255
+        ],
+        [
+          15,
+          153,
+          0
+        ],
+        [
+          164,
+          23,
+          0
+        ],
+        [
+          143,
+          54,
+          0
+        ],
+        [
+          195,
+          134,
+          255
+        ]
+      ],
+      "generated": 128,
+      "matches_all_eight": 0,
+      "best_examples_matched": 7
+    },
+    {
+      "examples": [
+        [
+          172,
+          77,
+          255
+        ],
+        [
+          190,
+          180,
+          0
+        ],
+        [
+          155,
+          89,
+          255
+        ],
+        [
+          218,
+          191,
+          0
+        ],
+        [
+          161,
+          112,
+          255
+        ],
+        [
+          129,
+          93,
+          255
+        ],
+        [
+          86,
+          223,
+          0
+        ],
+        [
+          209,
+          76,
+          0
+        ]
+      ],
+      "generated": 128,
+      "matches_all_eight": 0,
+      "best_examples_matched": 7
+    }
+  ],
+  "diagnostic_perfect_candidates": 0,
+  "exact_solutions_found": 0,
+  "full_grid_candidates_checked": 8,
+  "full_grid_results": [
+    {
+      "program": "A2C5EE24AE",
+      "pixels_correct": 32806,
+      "pixels": 65536,
+      "exact": false,
+      "inside_recall": 0.5016722679138184,
+      "outside_recall": 0.5003507137298584,
+      "balanced_accuracy": 0.5010114908218384,
+      "no_output_pixels": 0
+    },
+    {
+      "program": "A9A1655569",
+      "pixels_correct": 32806,
+      "pixels": 65536,
+      "exact": false,
+      "inside_recall": 0.5016722679138184,
+      "outside_recall": 0.5003507137298584,
+      "balanced_accuracy": 0.5010114908218384,
+      "no_output_pixels": 0
+    },
+    {
+      "program": "C5EDA124AD",
+      "pixels_correct": 32806,
+      "pixels": 65536,
+      "exact": false,
+      "inside_recall": 0.5016722679138184,
+      "outside_recall": 0.5003507137298584,
+      "balanced_accuracy": 0.5010114908218384,
+      "no_output_pixels": 0
+    },
+    {
+      "program": "B1EAACC6A1",
+      "pixels_correct": 32746,
+      "pixels": 65536,
+      "exact": false,
+      "inside_recall": 0.4990318715572357,
+      "outside_recall": 0.49979692697525024,
+      "balanced_accuracy": 0.499414399266243,
+      "no_output_pixels": 0
+    },
+    {
+      "program": "B9EAACC6A1",
+      "pixels_correct": 32746,
+      "pixels": 65536,
+      "exact": false,
+      "inside_recall": 0.4990318715572357,
+      "outside_recall": 0.49979692697525024,
+      "balanced_accuracy": 0.499414399266243,
+      "no_output_pixels": 0
+    },
+    {
+      "program": "C6ECB1A15E",
+      "pixels_correct": 32746,
+      "pixels": 65536,
+      "exact": false,
+      "inside_recall": 0.4990318715572357,
+      "outside_recall": 0.49979692697525024,
+      "balanced_accuracy": 0.499414399266243,
+      "no_output_pixels": 0
+    },
+    {
+      "program": "EB20B9C6A0",
+      "pixels_correct": 32746,
+      "pixels": 65536,
+      "exact": false,
+      "inside_recall": 0.4990318715572357,
+      "outside_recall": 0.49979692697525024,
+      "balanced_accuracy": 0.499414399266243,
+      "no_output_pixels": 0
+    },
+    {
+      "program": "C6AEE1A362",
+      "pixels_correct": 41739,
+      "pixels": 65536,
+      "exact": false,
+      "inside_recall": 0.24969196319580078,
+      "outside_recall": 0.7180935144424438,
+      "balanced_accuracy": 0.4838927388191223,
+      "no_output_pixels": 0
+    }
+  ],
+  "control_not_b_attempts": 256,
+  "control_not_b_verified_programs": [
+    "46E6668FD6",
+    "84E6D694C4",
+    "E7A029ABA3"
+  ],
+  "seconds": 1.5281210179673508
+}

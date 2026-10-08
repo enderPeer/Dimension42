@@ -1,0 +1,14 @@
+[Unit]
+Description=Keep the I226-V network chip (eno1) out of PCIe power saving (ASPM L1) and EEE
+Documentation=On 2026-10-06 21:09:34 eno1 dropped off the PCIe bus under load ("igc: PCIe link lost, device now detached") and falke64 was offline for 12 hours. ASPM L1 was enabled on the chip; EEE was already off.
+After=sys-subsystem-net-devices-eno1.device
+Wants=sys-subsystem-net-devices-eno1.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'echo 0 > /sys/class/net/eno1/device/link/l1_aspm'
+ExecStart=-/usr/sbin/ethtool --set-eee eno1 eee off
+
+[Install]
+WantedBy=multi-user.target

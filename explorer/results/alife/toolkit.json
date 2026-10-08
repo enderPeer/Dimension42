@@ -1,0 +1,20 @@
+{
+ "counts_in_all_5_byte_programs": {
+  "rep": 316,
+  "mutrep": 52261,
+  "healer": 12796352074,
+  "walker": 114222087156,
+  "stable": 481976596898,
+  "repair": 126319172,
+  "repair2": 3666
+ },
+ "lists": {
+  "replicators": 316,
+  "mutating_replicators": 52261,
+  "repairers_multi": 3666,
+  "healers_sample": 4092,
+  "walkers_sample": 80392,
+  "stable_sample": 116346,
+  "repairers_sample": 3690
+ }
+}
